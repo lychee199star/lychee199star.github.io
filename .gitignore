@@ -1,0 +1,34 @@
+# ===== 不能上传的东西 =====
+
+# 整个部署目录：含服务器 IP、RDP 凭据、66MB 打包 zip、上百张截图
+deploy/
+
+# 音频下载工具留下的临时缓存（约 350MB，网页完全不用）
+assets/audio/Temp/
+
+# 无损音频源文件；网页只引用同名 .mp3
+*.flac
+
+# 本地打包产物
+*.zip
+
+# 浏览器自动化测试的截图产物
+tests/artifacts/
+
+# 鼠标光标原始素材（站点用的是 assets/cursors 里的成品）
+_cursor_source/
+
+# PDF 渲染中间产物
+pdf_render/
+
+# 临时 Python 脚本
+_check.py
+_extract_docx.py
+_extract_pdf.py
+
+# ===== 系统 / 编辑器噪音 =====
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
+.idea/

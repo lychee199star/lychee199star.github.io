@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>新建测试 · 传播风洞</title><link rel="stylesheet" href="styles.css" /></head>
+  <body data-page="input">
+    <div class="page-transition" aria-hidden="true"></div>
+    <header class="topbar">
+      <a class="brand" href="index.html"><span class="brand-mark"><i></i><i></i><i></i></span><span>传播风洞<small>COMMWINDTUNNEL</small></span></a>
+      <nav class="main-nav" aria-label="主导航"><a href="index.html">总览</a><a class="active" href="input.html">新建测试</a><a href="validation.html">回溯验证</a><a href="about.html">产品说明</a></nav>
+      <div class="topbar-actions"><span class="status-dot"><i></i> 回放模式已就绪</span><button class="theme-toggle" type="button"><span>☼</span><em>日间</em></button><button class="icon-button menu-trigger" type="button">☰</button></div>
+    </header>
+    <main>
+      <section class="page-intro shell reveal"><div class="page-intro-row"><div><div class="breadcrumb"><a href="index.html">总览</a><span>/</span><b>新建测试</b></div><h1>让内容先走一遍<br /><em>受众的眼睛。</em></h1><p class="lede">四屏输入，最少的必填项。你提供原文和传播背景，系统负责拆解声明并安排仿真。</p></div><span class="section-index">NEW SESSION / 01</span></div></section>
+      <section class="wizard-shell shell reveal">
+        <aside class="wizard-steps panel" aria-label="输入步骤">
+          <div class="wizard-step is-current" data-step="1"><i>01</i><div><b>内容</b><span>原文与标题</span></div></div>
+          <div class="wizard-step" data-step="2"><i>02</i><div><b>平台与受众</b><span>谁会看到它</span></div></div>
+          <div class="wizard-step" data-step="3"><i>03</i><div><b>背景事实</b><span>不能被改动的部分</span></div></div>
+          <div class="wizard-step" data-step="4"><i>04</i><div><b>传播目标</b><span>希望留下什么</span></div></div>
+        </aside>
+        <div class="wizard-main">
+          <div class="wizard-progress"><span></span></div>
+          <section class="wizard-panel panel is-active" data-panel="1"><h2>先把要发布的内容放进来。</h2><p>系统会在预检阶段把全文拆解成可被单独截图、转述和核验的声明单元。</p><div class="form-grid"><div class="field full"><label for="title">内容标题</label><input id="title" type="text" placeholder="例如：2026 春季学期校园服务费调整说明" /></div><div class="field full"><label for="content">待发布内容全文</label><textarea id="content" placeholder="粘贴待测试的通知、公告、推文或项目说明……"></textarea></div></div><div class="wizard-actions"><button class="sample-link" id="fill-sample" type="button">↳ 一键填充校园通知示例</button><button class="button button-primary button-small wizard-next" type="button">下一步 <span>→</span></button></div></section>
+          <section class="wizard-panel panel" data-panel="2"><h2>内容会在哪儿被谁看到？</h2><p>平台决定阅读节奏，受众决定第一反应。可以先选一个主要受众，再用定制槽位补充利益相关群体。</p><div class="form-grid"><div class="field"><label for="platform">发布平台</label><select id="platform"><option>微信公众号</option><option>校园公告栏</option><option>微博 / 社交媒体</option><option>企业内网</option></select></div><div class="field"><label for="audience">主要受众</label><select id="audience"><option>家长 / 学生</option><option>普通读者</option><option>消费者</option><option>员工</option></select></div><div class="field full"><label for="custom-persona">定制受众（可选）</label><input id="custom-persona" type="text" placeholder="例如：对费用变化敏感的家长" /></div></div><div class="wizard-actions"><button class="button button-muted button-small wizard-prev" type="button">← 上一步</button><button class="button button-primary button-small wizard-next" type="button">下一步 <span>→</span></button></div></section>
+          <section class="wizard-panel panel" data-panel="3"><h2>哪些事实不能被改动？</h2><p>把时间、数字、政策原文或已经确认的事实列在这里，帮助仿真只基于你给出的依据。</p><div class="form-grid"><div class="field full"><label for="facts">不可改变的事实清单</label><textarea id="facts" placeholder="例如：调整从 2026 年春季学期开始；服务费由 480 元调整为 560 元；费用用于校内餐饮与宿舍维护。"></textarea></div><div class="field"><label for="context">发布背景</label><input id="context" type="text" placeholder="例如：春季开学前的家校沟通" /></div><div class="field"><label for="source">事实来源</label><input id="source" type="text" placeholder="例如：财务处确认稿 / 会议纪要" /></div></div><div class="wizard-actions"><button class="button button-muted button-small wizard-prev" type="button">← 上一步</button><button class="button button-primary button-small wizard-next" type="button">下一步 <span>→</span></button></div></section>
+          <section class="wizard-panel panel" data-panel="4"><h2>这次传播，希望什么结果？</h2><p>目标不是让每个人都同意，而是让关键事实被准确理解，让需要解释的地方在发布前被看见。</p><div class="form-grid"><div class="field full"><label for="goal">传播目标</label><textarea id="goal" placeholder="例如：让家长理解费用调整的用途和开始时间，减少“突然涨价、学校不透明”的第一印象。"></textarea></div><div class="field full"><label for="guardrail">额外提醒（可选）</label><input id="guardrail" type="text" placeholder="例如：不要把“费用增加”写成“涨价”以外的承诺性判断" /></div></div><div class="wizard-actions"><button class="button button-muted button-small wizard-prev" type="button">← 上一步</button><a class="button button-primary button-small" href="results.html?demo=1">开始压力测试 <span>↗</span></a></div></section>
+        </div>
+      </section>
+    </main>
+    <footer class="footer shell"><span>传播风洞 / CommWindTunnel</span><span>输入越具体，建议越可核验。</span><a href="about.html">使用披露 ↗</a></footer>
+    <script src="script.js"></script>
+  </body>
+</html>

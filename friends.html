@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#183c37" />
+    <meta name="description" content="定南の 碎碎念的同行猎人名录：艾露猫村口的友链告示板。" />
+    <title>同行猎人名录 · 定南の 碎碎念</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="friends.css" />
+  </head>
+  <body class="blog-page friends-page">
+    <header class="friends-header">
+      <nav class="friends-nav" aria-label="主导航">
+        <a class="friends-brand" href="index.html">🐾 定南の 碎碎念</a>
+        <div class="friends-nav-links">
+          <a href="index.html">首页</a>
+          <a href="index.html#posts">文章</a>
+          <a href="index.html#about">关于我</a>
+          <a href="friends.html" aria-current="page">友链</a>
+          <button class="translation-toggle notranslate" type="button" data-language-toggle translate="no" lang="zh-CN" title="机翻仅供参喵" aria-label="切换为英文" aria-pressed="false">译/EN</button>
+        </div>
+      </nav>
+    </header>
+    <main class="friends-main">
+      <!-- 木质横匾；标题和副标题保留原文。 -->
+      <header class="friends-sign wood-panel">
+        <span class="friends-kicker">PALICO VILLAGE / HUNTER DIRECTORY</span>
+        <h1>同行猎人名录</h1>
+        <p>这里钉着和本喵并肩作战的猎人们的名片喵！漏了谁，快去留言板喊本喵！</p>
+      </header>
+
+      <section class="friends-wall wood-panel" aria-labelledby="friends-wall-title">
+        <div class="friends-wall-heading"><h2 id="friends-wall-title">一起出发的猎人们</h2><span id="friends-count">00 位同行猎人</span></div>
+        <div class="friend-grid" id="friend-grid"></div>
+        <div class="friends-empty" id="friends-empty">
+          <span class="paw-placeholder" aria-hidden="true"></span>
+          <p>名片墙已经准备好，等第一位同行猎人来留爪印喵！</p>
+          <a href="#exchange">去看看交换名片的小约定 ↓</a>
+        </div>
+        <noscript><p class="friends-noscript">请启用 JavaScript 查看猎人名片喵。</p></noscript>
+      </section>
+
+      <!-- 申请说明与“本喵的名片”并排，手机自动改为上下排列。 -->
+      <section class="friends-exchange" id="exchange" aria-labelledby="exchange-title">
+        <div class="exchange-sign wood-panel">
+          <p class="friends-kicker">LEAVE YOUR PAW PRINT</p>
+          <h2 id="exchange-title">想和本喵交换名片喵？</h2>
+          <p>把下面四样东西钉到留言板上喵：</p>
+          <ul class="exchange-requirements">
+            <li>① 猫咪名（昵称）</li>
+            <li>② 头像一张（图片网址）</li>
+            <li>③ 巢穴地址（博客链接）</li>
+            <li>④ 一句自我介绍喵</li>
+          </ul>
+          <p>本喵审核通过后，就把你的名片钉上这面名录喵！</p>
+          <p class="exchange-agreement">小约定：内容要健康、最好先在本喵这边留过爪印喵；<br />哪天巢穴塌了（站点挂了），本喵会把名片收进抽屉喵～</p>
+          <a class="exchange-button" href="index.html#cat-guestbook">去留言板留爪印 🐾</a>
+          <small class="exchange-local-note">目前留言板仅保存在留言者自己的浏览器中。站长暂时无法收到在线申请喵。</small>
+        </div>
+        <aside class="own-card" aria-labelledby="own-card-title">
+          <span class="paw-placeholder" aria-hidden="true"></span>
+          <p class="own-card-kicker">PALICO CALLING CARD</p>
+          <h2 id="own-card-title">本喵的名片</h2>
+          <!-- 待填写：把下面四个【…】改为你的实际信息。 -->
+          <dl id="own-card-details">
+            <div><dt>昵称</dt><dd>【填你的昵称】</dd></div>
+            <div><dt>头像</dt><dd>【填你的头像图链接】</dd></div>
+            <div><dt>链接</dt><dd>【填你的博客地址】</dd></div>
+            <div><dt>签名</dt><dd>【填一句话】</dd></div>
+          </dl>
+          <button id="copy-own-card" type="button">复制本喵的名片</button>
+          <p id="copy-card-status" class="copy-card-status" role="status" aria-live="polite"></p>
+          <label class="sr-only" for="copy-card-fallback">名片文字，可选中后手动复制</label>
+          <textarea id="copy-card-fallback" readonly hidden rows="5"></textarea>
+        </aside>
+      </section>
+    </main>
+    <footer class="friends-footer"><span>© 2026 lychee · 猫村同行手册</span><a href="index.html">回村首页 ↑</a></footer>
+
+    <!-- 猫村留声机：与首页共用 music-player.js，从任何页面跳过来都接着上一首、上次的进度继续播。 -->
+    <section class="music-player music-player--mini music-player--wood" id="music-player" aria-label="猫村留声机">
+      <div class="music-player__header">
+        <div class="music-player__eyebrow">♫ PALICO GRAMOPHONE</div>
+        <button class="music-player__collapse" id="music-collapse" type="button" aria-label="收起音乐播放器" aria-expanded="true">−</button>
+      </div>
+      <div class="music-player__body">
+        <div class="music-player__now-playing">
+          <span class="music-player__disc" aria-hidden="true">♫</span>
+          <div>
+            <span class="music-player__label">正在播放</span>
+            <strong id="music-title">英雄の証</strong>
+            <span class="music-player__status" id="music-status" role="status">准备播放</span>
+          </div>
+        </div>
+        <div class="music-player__controls" aria-label="播放控制">
+          <button class="music-control" id="music-prev" type="button" aria-label="上一首">↶</button>
+          <button class="music-control music-control--main" id="music-play" type="button" aria-label="播放">▶</button>
+          <button class="music-control" id="music-next" type="button" aria-label="下一首">↷</button>
+        </div>
+        <div class="music-player__progress">
+          <input class="music-player__slider music-player__seek" id="music-seek" type="range" min="0" max="1000" step="1" value="0" aria-label="播放进度" aria-valuetext="0:00 / 0:00" />
+          <div class="music-player__time"><span id="music-current">0:00</span><span id="music-duration">0:00</span></div>
+        </div>
+        <label class="music-player__volume">
+          <span>音量</span>
+          <input class="music-player__slider" id="music-volume" type="range" min="0" max="100" step="1" value="100" aria-label="音量" />
+        </label>
+      </div>
+      <audio id="music-audio" preload="metadata"></audio>
+    </section>
+
+    <!-- 友链数据区：以后加友链只改这个数组，不用动渲染代码。 -->
+    <script id="friend-links-data">
+      const friendLinks = [
+        // 复制下面一项，删掉行首的 //，替换四个值即可。每项之间保留逗号。
+        // { name: '朋友昵称', url: 'https://朋友的博客域名', avatar: 'https://朋友的头像图片地址', desc: '朋友的一句话签名' },
+        // 没有头像时填 avatar: ''，会显示猫爪占位图。
+      ];
+    </script>
+    <canvas id="click-particles" aria-hidden="true"></canvas>
+    <script src="click-particles.js"></script>
+    <!-- 公共播放器：与首页同一份代码，负责接着上一页的歌和进度继续播。 -->
+    <script src="music-player.js"></script>
+    <!-- 此页不加载首页 script.js，避免调用首页专属弹窗。 -->
+    <script src="friends.js"></script>
+    <!-- translate.js 3.18.66；CDN: https://cdn.staticfile.net/translate.js/3.18.66/translate.js -->
+    <script id="translate-cdn" src="https://cdn.staticfile.net/translate.js/3.18.66/translate.js" async onerror="this.dataset.failed='true'"></script>
+    <script src="translation.js"></script>
+  </body>
+</html>

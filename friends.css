@@ -1,0 +1,127 @@
+/* 独立友链页专用样式；在 styles.css 之后加载，复用博客 PNG 光标。 */
+.friends-page { color: #f2e4c0; background: #18342e; background-image: linear-gradient(#102923db, #18342eed), url('assets/lower-bg-1.jpg'); background-size: cover; background-attachment: fixed; }
+.friends-header { border-bottom: 1px solid #f2e4c026; background: #102720dd; }
+.friends-nav { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 18px 28px; max-width: 1160px; margin: auto; padding: 22px 28px; }
+.friends-brand { font: 700 19px/1.6 'KaiTi', 'STKaiti', serif; }
+.friends-nav-links { display: flex; flex-wrap: wrap; gap: 24px; font-size: 13px; }
+.friends-nav-links a, .friends-nav-links .translation-toggle { padding-block: 5px; color: #c6d1c8; border-bottom: 2px solid transparent; }
+.friends-nav-links a:hover, .friends-nav-links .translation-toggle:hover, .friends-nav-links [aria-current='page'] { color: #f2e4c0; border-bottom-color: #d9b875; }
+.friends-main { max-width: 1160px; margin: auto; padding: 66px 28px 70px; }
+/* CSS 木纹拼板，不需要额外纹理图片。 */
+.wood-panel { position: relative; border: 3px solid #5C3A1E; border-radius: 6px; background-color: #8B5E34; background-image: repeating-linear-gradient(2deg, transparent 0 7px, #39210e22 8px 9px, transparent 10px 16px), repeating-linear-gradient(0deg, transparent 0 67px, #5c3a1e 68px 71px, #b5885044 72px 74px), linear-gradient(100deg, #996b3f, #744a28 65%, #8B5E34); box-shadow: inset 0 0 0 2px #c7976255, 0 15px 30px #04130e55; }
+.friends-sign { padding: 30px 26px 32px; text-align: center; color: #F2E4C0; text-shadow: 0 2px 1px #39200e; }
+.friends-sign::before, .friends-sign::after { content: ''; position: absolute; top: -37px; width: 10px; height: 48px; border: 1px solid #664a29; border-radius: 4px; background: repeating-linear-gradient(35deg, #b09461 0 3px, #dfc490 3px 5px, #77542f 5px 7px); box-shadow: 1px 2px 3px #0005; }
+.friends-sign::before { left: 36px; transform: rotate(-4deg); }.friends-sign::after { right: 36px; transform: rotate(4deg); }
+.friends-kicker { display: block; margin: 0 0 12px; font: 10px/1.6 monospace; letter-spacing: .14em; color: #e5cc9d; }
+.friends-sign h1 { margin: 0; font: 700 clamp(30px, 4.5vw, 50px)/1.4 'KaiTi', 'STKaiti', serif; letter-spacing: .08em; }
+.friends-sign p { max-width: 620px; margin: 14px auto 0; font: 16px/1.9 'KaiTi', 'STKaiti', sans-serif; }
+.friends-wall { margin-top: 36px; padding: 28px; }
+.friends-wall-heading { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding-bottom: 22px; }
+.friends-wall-heading h2 { margin: 0; font: 700 20px/1.5 'KaiTi', 'STKaiti', serif; }
+.friends-wall-heading > span { font-size: 11px; color: #ead4ae; }
+/* 桌面 3 列；平板 2 列；手机 1 列。 */
+.friend-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; padding: 10px 4px 6px; }
+.friend-card { position: relative; display: flex; min-width: 0; flex-direction: column; align-items: center; padding: 28px 20px 30px; text-align: center; color: #423425; background: linear-gradient(115deg, #fff9e9, #eee3cc); border: 2px solid #d6c8a9; border-radius: 3px; transform: rotate(var(--card-tilt, 0deg)); box-shadow: 2px 5px 8px #2e1a0d66; transition: transform 200ms ease, border-color 200ms ease, box-shadow 200ms ease; }
+.friend-card::before, .own-card::before { content: ''; position: absolute; top: 9px; left: calc(50% - 5px); width: 10px; height: 10px; border-radius: 50%; background: radial-gradient(circle at 30% 25%, #a7a38e 0 1px, #49483d 2px 4px, #2e3029 5px); box-shadow: 1px 3px 3px #0005; }
+.friend-card:hover, .friend-card:focus-visible { transform: translateY(-4px) rotate(0deg); border-color: #3E8EF7; box-shadow: 2px 10px 16px #182e3b55; }
+.friend-card:focus-visible { outline: 2px solid #6fd6ff; outline-offset: 3px; }
+.friend-avatar { position: relative; display: grid; place-items: center; width: 64px; height: 64px; flex: 0 0 64px; overflow: hidden; border-radius: 14px; background: #e5d6b7; border: 1px solid #c6b48f; }
+.friend-avatar img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; }
+.friend-avatar img[hidden] { display: none; }
+.friend-avatar img.is-loading { opacity: 0; }
+/* 米色底上的猫爪由 CSS 椭圆构成；无头像或图片加载失败时露出它。 */
+.paw-placeholder { position: relative; display: inline-block; width: 54px; height: 54px; flex-shrink: 0; }
+.paw-placeholder::before { content: ''; position: absolute; left: 15px; top: 27px; width: 25px; height: 20px; border-radius: 55% 55% 40% 40%; background: #947046; }
+.paw-placeholder::after { content: ''; position: absolute; left: 7px; top: 19px; width: 9px; height: 12px; border-radius: 50%; background: #947046; box-shadow: 10px -10px #947046, 23px -10px #947046, 33px 0 #947046; }
+.friend-name { margin-top: 14px; font-size: 18px; line-height: 1.5; overflow-wrap: anywhere; max-width: 100%; }
+.friend-desc { margin: 8px 0 18px; color: #6f614e; font-size: 13px; line-height: 1.8; overflow-wrap: anywhere; width: 100%; }
+.friend-domain { margin-top: auto; color: #847c70; font: 11px/1.7 monospace; overflow-wrap: anywhere; max-width: 100%; }
+.friend-fish { position: absolute; right: 10px; bottom: 5px; font-size: 20px; opacity: 0; transform: translateY(4px) rotate(-18deg); transition: opacity 200ms ease, transform 200ms ease; }
+.friend-card:hover .friend-fish, .friend-card:focus-visible .friend-fish { opacity: 1; transform: translateY(0) rotate(-18deg); }
+.friends-empty { display: grid; justify-items: center; gap: 8px; padding: 30px 15px 42px; color: #65533d; background: #f8edda; border: 1px dashed #b29870; text-align: center; border-radius: 3px; }
+.friends-empty[hidden] { display: none; }
+.friends-empty p { max-width: 380px; margin: 3px 0 10px; font: 16px/1.9 'KaiTi', 'STKaiti', sans-serif; }
+.friends-empty a { color: #315a63; border-bottom: 1px solid #315a6366; font-size: 12px; }
+.friends-noscript { text-align: center; }
+.friends-exchange { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); align-items: start; gap: 36px; margin-top: 44px; }
+.exchange-sign { padding: 28px; }
+.exchange-sign h2 { margin: 0 0 18px; font: 700 24px/1.5 'KaiTi', 'STKaiti', serif; }
+.exchange-sign p:not(.friends-kicker) { font-size: 14px; line-height: 1.9; }
+.exchange-requirements { list-style: none; padding: 0; margin: 16px 0; line-height: 2; font-size: 14px; }
+.exchange-agreement { padding-top: 16px; border-top: 1px solid #f2e4c044; }
+.exchange-button { display: inline-block; padding: 10px 16px; margin-top: 8px; color: #3a3020; background: #f2e4c0; border: 1px solid #ccaa6a; border-radius: 3px; font-size: 14px; font-weight: 700; }
+.exchange-button:hover { background: #fff1d2; }
+.exchange-local-note { display: block; margin-top: 14px; color: #f2e4c0; font-size: 11px; line-height: 1.8; }
+.own-card { position: relative; padding: 32px 28px 22px; color: #493b2a; background: linear-gradient(115deg, #fff9e9, #ece0c6); border: 1px solid #d6c8a9; box-shadow: 2px 5px 15px #071d1966; border-radius: 3px; }
+.own-card > .paw-placeholder { display: block; margin: auto; }
+.own-card-kicker { text-align: center; font: 10px/1.8 monospace; color: #8f7858; letter-spacing: .12em; }
+.own-card h2 { margin: 7px 0 24px; font: 700 25px/1.4 'KaiTi', 'STKaiti', serif; text-align: center; }
+.own-card dl { margin: 0 0 22px; }
+.own-card dl > div { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 10px; padding: 11px 0; border-bottom: 1px dashed #baa27a77; font-size: 13px; }
+.own-card dt { color: #7e705c; }.own-card dd { margin: 0; color: #8a4d25; font-weight: 600; overflow-wrap: anywhere; user-select: text; }
+#copy-own-card { width: 100%; padding: 11px; color: #f2e4c0; background: #315348; border-radius: 3px; font-size: 13px; }
+#copy-own-card:hover { background: #203c33; }
+.copy-card-status { min-height: 20px; margin: 10px 0 0; font-size: 12px; line-height: 1.7; }
+#copy-card-fallback { width: 100%; resize: vertical; background: #fffaf0; color: #493b2a; padding: 8px; font: 12px/1.7 sans-serif; border: 1px solid #b29870; }
+.friends-footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 18px; max-width: 1160px; margin: auto; padding: 24px 28px 35px; color: #afbcaf; font-size: 11px; border-top: 1px solid #f2e4c026; }
+.friends-page a:focus-visible, .friends-page button:focus-visible { outline: 2px solid #6fd6ff; outline-offset: 3px; }
+/* 让整张可点击卡片（包括内部头像和文字）都使用手指光标。 */
+@media (hover: hover) and (pointer: fine) {
+  body.blog-page.friends-page:not(.admin-page):not(.admin):not([data-admin]) .friend-card,
+  body.blog-page.friends-page:not(.admin-page):not(.admin):not([data-admin]) .friend-card * { cursor: url('assets/cursors/cursor-link.png') 11 5, pointer !important; }
+  body.blog-page.friends-page:not(.admin-page):not(.admin):not([data-admin]) .own-card dd,
+  body.blog-page.friends-page:not(.admin-page):not(.admin):not([data-admin]) #copy-card-fallback { cursor: text !important; }
+}
+@media (max-width: 1023px) { .friend-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 767px) {
+  .friends-main { padding: 52px 20px 42px; }.friends-nav { padding: 18px 20px; }.friends-nav-links { gap: 20px; }
+  .friend-grid { grid-template-columns: minmax(0, 1fr); gap: 26px; }
+  .friends-wall { padding: 22px 16px; }.friends-sign { padding: 26px 18px; }
+  .friends-exchange { grid-template-columns: minmax(0, 1fr); gap: 28px; margin-top: 32px; }
+  .exchange-sign, .own-card { padding: 26px 20px; }
+}
+@media (prefers-reduced-motion: reduce) { .friend-card, .friend-fish { transition: none; } }
+
+/* =========================================================================
+   猫村留声机：友链页左下角的迷你播放器，和首页共用 music-player.js。
+   木头外观跟随本页的木质方板，所以圆角保持 6px，不跟着首页改成大圆角。
+   ========================================================================= */
+.friends-page .music-player--wood {
+  position: fixed; top: auto; right: auto; bottom: 20px; left: 20px;
+  z-index: 36;
+  width: min(300px, calc(100vw - 32px));
+  color: #F2E4C0;
+  background-color: #7c5129;
+  background-image:
+    repeating-linear-gradient(2deg, transparent 0 6px, #311b0b26 7px 8px, transparent 9px 15px),
+    linear-gradient(105deg, #9d6d3f, #6f4a27 62%, #8B5E34);
+  border: 2px solid #4c2c17;
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 1px #c5935666, 0 16px 32px #04130e66;
+  backdrop-filter: none;
+}
+.friends-page .music-player--wood .music-player__header { border-bottom-color: #f2e4c026; }
+.friends-page .music-player--wood .music-player__eyebrow,
+.friends-page .music-player--wood .music-player__label,
+.friends-page .music-player--wood .music-player__status,
+.friends-page .music-player--wood .music-player__time,
+.friends-page .music-player--wood .music-player__volume { color: #e5cc9d; }
+.friends-page .music-player--wood .music-player__now-playing strong { color: #fff7e6; }
+.friends-page .music-player--wood .music-player__disc { color: #4c2c17; background: #f2e4c0; box-shadow: 0 0 0 4px #f2e4c014; }
+.friends-page .music-player--wood .music-player__collapse { color: #f2e4c0; }
+.friends-page .music-player--wood .music-control { color: #f2e4c0; background: #f2e4c014; border-color: #f2e4c03d; }
+.friends-page .music-player--wood .music-control:hover { background: #f2e4c028; }
+.friends-page .music-player--wood .music-control--main { color: #4c2c17; background: #f2e4c0; border-color: #f2e4c0; }
+.friends-page .music-player--wood .music-control--main:hover { background: #fff6e2; }
+.friends-page .music-player--wood .music-player__slider::-webkit-slider-runnable-track {
+  background: linear-gradient(to right, #f2e4c0 0 var(--music-progress, 0%), #f2e4c01f var(--music-progress, 0%) 100%);
+}
+.friends-page .music-player--wood .music-player__slider::-moz-range-track { background: #f2e4c01f; }
+.friends-page .music-player--wood .music-player__slider::-moz-range-progress { background: #f2e4c0; }
+.friends-page .music-player--wood .music-player__slider::-webkit-slider-thumb { background: #fff6e2; box-shadow: 0 0 0 3px #f2e4c02e; }
+.friends-page .music-player--wood .music-player__slider::-moz-range-thumb { background: #fff6e2; box-shadow: 0 0 0 3px #f2e4c02e; }
+.friends-page .music-player--wood.is-collapsed { width: auto; min-width: 168px; }
+@media (max-width: 560px) {
+  .friends-page .music-player--wood { left: 12px; bottom: 12px; width: min(292px, calc(100vw - 24px)); }
+  .friends-page .music-player--wood.is-collapsed { width: auto; min-width: 152px; }
+}

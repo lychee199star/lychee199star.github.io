@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>人工处置 · 传播风洞</title><link rel="stylesheet" href="styles.css" /></head>
+  <body data-page="review">
+    <div class="page-transition" aria-hidden="true"></div>
+    <header class="topbar"><a class="brand" href="index.html"><span class="brand-mark"><i></i><i></i><i></i></span><span>传播风洞<small>COMMWINDTUNNEL</small></span></a><nav class="main-nav" aria-label="主导航"><a href="index.html">总览</a><a href="input.html">新建测试</a><a href="results.html">仿真结果</a><a class="active" href="review.html">人工处置</a><a href="about.html">产品说明</a></nav><div class="topbar-actions"><span class="status-dot"><i></i> 回放模式已就绪</span><button class="theme-toggle" type="button"><span>☼</span><em>日间</em></button><button class="icon-button menu-trigger" type="button">☰</button></div></header>
+    <main>
+      <section class="page-intro shell reveal"><div class="page-intro-row"><div><div class="breadcrumb"><a href="results.html">仿真结果</a><span>/</span><b>人工处置</b></div><h1>让每一条预警，<br /><em>都有一个人的判断。</em></h1><p class="lede">仿真提供可能的路径，处置决定哪些值得保留、哪些属于过度敏感，以及哪些建议要回到原文里。</p></div><span class="section-index">DECISION LOG / 04</span></div></section>
+      <section class="review-grid shell reveal">
+        <aside class="queue panel"><div class="panel-heading"><h3>待处置路径</h3><small><span id="decision-count">0</span> / 3</small></div><div class="queue-list"><button class="queue-item is-selected" data-route="0"><strong>“突然涨价”叙事</strong><span>C01 · 截取者 / 家长</span><em class="high">高危 91</em></button><button class="queue-item" data-route="1"><strong>“公开”承诺被追问</strong><span>C04 · 质疑者 / 媒体</span><em class="mid">关注 78</em></button><button class="queue-item" data-route="2"><strong>资助范围需要解释</strong><span>C05 · 家长</span><em class="mid">关注 73</em></button></div></aside>
+        <article class="review-main panel"><p class="eyebrow">CURRENT PATH / C01</p><h2 id="review-title">“突然涨价”叙事</h2><p class="subline" id="review-subline">截取者 + 家长 · 情绪强度 4/5 · 传播意愿高</p><div class="route-steps"><div class="route-step"><small>01 · 原文</small><b>480 → 560 元</b><p>数字对比最醒目</p></div><div class="route-step"><small>02 · 截取</small><b>只留下金额</b><p>解释段落被截掉</p></div><div class="route-step"><small>03 · 转述</small><b>学校突然涨价</b><p>第一印象变成判断</p></div><div class="route-step"><small>04 · 发酵</small><b>追问钱去哪了</b><p>要求公开明细</p></div></div><div class="review-callout" id="review-callout">这条路径有原文依据：数字变化真实存在，但“突然”来自发布背景没有先解释调整原因和开始时间。</div><div class="compare-grid" style="margin-top:20px"><div class="compare-card"><small>原文引用</small><p id="review-original">服务费将从 480 元调整为 560 元，相关费用用于餐饮与宿舍维护。</p></div><div class="compare-card after"><small>前置解释建议</small><p id="review-suggestion">在金额前补充“自 2026 年春季学期起，因餐饮与宿舍维护成本变化”并链接费用明细。</p></div></div></article>
+        <aside class="review-actions panel"><h3>你怎么判断？</h3><p>处置会写入会话记录，也会成为下一轮评测的人工标注。</p><button class="decision-button good" data-decision="合理预警"><b>合理预警</b><span>保留路径</span></button><button class="decision-button maybe" data-decision="过度敏感"><b>过度敏感</b><span>降低优先级</span></button><button class="decision-button adopt" data-decision="采纳建议"><b>采纳建议</b><span>使用修改稿</span></button><div class="decision-status">当前状态：<strong id="decision-status">未处置</strong></div><a class="button button-primary button-small" style="width:100%;margin-top:17px" href="report.html">查看报告 <span>↗</span></a></aside>
+      </section>
+    </main>
+    <footer class="footer shell"><span>键盘操作：1 合理预警 · 2 过度敏感 · 3 采纳建议</span><span>人工处置平均用时 02:14</span><a href="results.html">返回结果 ↗</a></footer>
+    <script src="script.js"></script>
+  </body>
+</html>
