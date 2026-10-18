@@ -26,6 +26,9 @@ _check.py
 _extract_docx.py
 _extract_pdf.py
 
+# GitHub Actions 里生成的发布暂存目录
+_site/
+
 # ===== 系统 / 编辑器噪音 =====
 Thumbs.db
 desktop.ini
