@@ -10,15 +10,22 @@
     <link rel="stylesheet" href="friends.css" />
   </head>
   <body class="blog-page friends-page">
+    <div class="catcar-transition" id="catcar-transition" aria-hidden="true">
+      <div class="catcar-transition__inner" role="status" aria-live="polite">
+        <p class="catcar-transition__message" id="catcar-transition-message"></p>
+        <div class="catcar-transition__dots" aria-hidden="true"><i></i><i></i><i></i></div>
+      </div>
+    </div>
+    <canvas id="music-waves" aria-hidden="true"></canvas>
     <header class="friends-header">
       <nav class="friends-nav" aria-label="主导航">
         <a class="friends-brand" href="index.html">🐾 定南の 碎碎念</a>
         <div class="friends-nav-links">
-          <a href="index.html">首页</a>
-          <a href="index.html#posts">文章</a>
-          <a href="index.html#about">关于我</a>
-          <a href="friends.html" aria-current="page">友链</a>
-          <button class="translation-toggle notranslate" type="button" data-language-toggle translate="no" lang="zh-CN" title="机翻仅供参喵" aria-label="切换为英文" aria-pressed="false">译/EN</button>
+          <a class="tilt" href="index.html">首页</a>
+          <a class="tilt" href="index.html#posts">文章</a>
+          <a class="tilt" href="index.html#about">关于我</a>
+          <a class="tilt" href="friends.html" aria-current="page">友链</a>
+          <button class="translation-toggle tilt notranslate" type="button" data-language-toggle translate="no" lang="zh-CN" title="机翻仅供参喵" aria-label="切换为英文" aria-pressed="false">译/EN</button>
         </div>
       </nav>
     </header>
@@ -97,6 +104,7 @@
           <button class="music-control" id="music-prev" type="button" aria-label="上一首">↶</button>
           <button class="music-control music-control--main" id="music-play" type="button" aria-label="播放">▶</button>
           <button class="music-control" id="music-next" type="button" aria-label="下一首">↷</button>
+          <button class="music-control music-control--external" id="music-external" type="button" aria-label="在外部播放器打开当前歌曲" title="外接播放器">↗</button>
         </div>
         <div class="music-player__progress">
           <input class="music-player__slider music-player__seek" id="music-seek" type="range" min="0" max="1000" step="1" value="0" aria-label="播放进度" aria-valuetext="0:00 / 0:00" />
@@ -122,6 +130,9 @@
     <script src="click-particles.js"></script>
     <!-- 公共播放器：与首页同一份代码，负责接着上一页的歌和进度继续播。 -->
     <script src="music-player.js"></script>
+    <script src="catcar-transition.js"></script>
+    <script src="music-waves.js"></script>
+    <script src="tilt.js"></script>
     <!-- 此页不加载首页 script.js，避免调用首页专属弹窗。 -->
     <script src="friends.js"></script>
     <!-- translate.js 3.18.66；CDN: https://cdn.staticfile.net/translate.js/3.18.66/translate.js -->

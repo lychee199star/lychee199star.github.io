@@ -1,3 +1,61 @@
+// 状态随便改，一条配一个颜文字，情绪要和台词匹配
+const CAT_STATUS_ITEMS = [
+  { kaomoji: '(^・ω・^ )', text: '今天心情好到尾巴都翘起来啦，老大也要开开心心的喵！' },
+  { kaomoji: '(。-ω-)zzz', text: '老大……本喵眼睛要睁不开了，借个肩膀靠一靠喵……' },
+  { kaomoji: '(≧▽≦)', text: '老大，本喵的肚子在敲鼓了，今天开饭能不能提前一点喵？' },
+  { kaomoji: '(￣^￣)', text: '本喵才没有一直盯着门口等老大回来呢，只是刚好路过喵！' },
+  { kaomoji: '(=^･ω･^=)', text: '老大～抱一下嘛，就一下，本喵今天乖得不得了喵！' },
+  { kaomoji: '(｀皿´)', text: '哼，老大居然忘了给本喵留小鱼干，本喵宣布绝交三分钟喵！' },
+  { kaomoji: '(｡•́︿•̀｡)', text: '老大今天眉头皱了一下午，遇到什么难事了吗？本喵会陪着你喵。' },
+  { kaomoji: '(☆▽☆)', text: '老大老大！本喵刚发现了被窝里最舒服的角落，分你一半喵！' },
+  { kaomoji: '(´;ω;｀)', text: '老大是不是不喜欢本喵了……今天的摸头比昨天少了十七下喵……' },
+  { kaomoji: '(・_・?)', text: '老大，为什么人类要把闹钟放床头？那不是每天都被吓醒喵？' },
+  { kaomoji: '(￣▽￣)ノ', text: '嘿嘿，本喵今天学会开门了，老大以后藏零食要换个地方喵！' },
+  { kaomoji: '(￣～￣)', text: '老大不在的时候时间过得好慢……本喵都数完第七十七次天花板裂缝了喵。' },
+  { kaomoji: '(★ω★)', text: '老大，周末带本喵出去晒太阳好不好？本喵保证不抓鸟喵！' },
+  { kaomoji: 'Σ(°Д°)', text: '老大！！本喵听到风声说下周有考试！要不要躲进被窝避难喵？' },
+  { kaomoji: '(´▽｀)', text: '老大手好暖和，本喵就赖在你怀里五分钟……五分钟……再五分钟喵。' },
+  { kaomoji: '(＞ω＜)', text: '老大看我看我！本喵新学的歪头杀，有没有被可爱到喵？' },
+  { kaomoji: '(￢_￢)', text: '今天的本喵是高冷猫格，老大可以崇拜本喵，但不要摸头喵。' },
+  { kaomoji: '(；一_一)', text: '老大，饭要按时吃、觉要早点睡、出门记得带伞……本喵越来越像猫妈妈了喵。' },
+  { kaomoji: 'ᕙ(＠°▽°＠)ᕗ', text: '早啊老大！今天也是元气满满的一天，一起加油打怪升级喵！' },
+  { kaomoji: '(´-ω-`)', text: '老大还没睡吗……本喵也睡不着，那本喵陪你一起看星星好了喵。' }
+];
+
+// 名单随便改，按 {name, url} 格式加一条就行
+const siteList = [
+  { name: '中国大学MOOC', url: 'https://www.icourse163.org/' },
+  { name: '智慧树', url: 'https://www.zhihuishu.com/' },
+  { name: '超星学习通', url: 'https://www.chaoxing.com/' },
+  { name: 'B站', url: 'https://www.bilibili.com/' },
+  { name: '学信网', url: 'https://www.chsi.com.cn/' },
+  { name: '中国知网', url: 'https://www.cnki.net/' },
+  { name: '万方数据', url: 'https://www.wanfangdata.com.cn/' },
+  { name: '国家图书馆', url: 'https://www.nlc.cn/' },
+  { name: '研招网', url: 'https://yz.chsi.com.cn/' },
+  { name: '四六级', url: 'https://cet.neea.edu.cn/' },
+  { name: '24365就业', url: 'https://www.ncss.cn/' },
+  { name: '百度网盘', url: 'https://pan.baidu.com/' },
+  { name: '腾讯文档', url: 'https://docs.qq.com/' },
+  { name: '石墨文档', url: 'https://shimo.im/' },
+  { name: 'GitHub', url: 'https://github.com/' },
+  { name: 'Stack Overflow', url: 'https://stackoverflow.com/' },
+  { name: 'CSDN', url: 'https://www.csdn.net/' },
+  { name: 'DeepSeek', url: 'https://chat.deepseek.com/' },
+  { name: 'Kimi', url: 'https://kimi.moonshot.cn/' },
+  { name: '豆包', url: 'https://www.doubao.com/' },
+  { name: '文心一言', url: 'https://yiyan.baidu.com/' },
+  { name: '智谱清言', url: 'https://chatglm.cn/' },
+  { name: '讯飞星火', url: 'https://xinghuo.xfyun.cn/' },
+  { name: 'ChatGPT', url: 'https://chatgpt.com/' },
+  { name: 'Claude', url: 'https://claude.ai/' },
+  { name: 'Gemini', url: 'https://gemini.google.com/' },
+  { name: 'Perplexity', url: 'https://www.perplexity.ai/' },
+  { name: 'Cursor', url: 'https://www.cursor.com/' },
+  { name: 'Midjourney', url: 'https://www.midjourney.com/' },
+  { name: '即梦', url: 'https://jimeng.jianying.com/' }
+];
+
 const body = document.body;
 const progress = document.querySelector('.reading-progress span');
 const themeToggle = document.querySelector('#theme-toggle');
@@ -11,6 +69,10 @@ const searchResults = document.querySelector('#search-results');
 const newsletterForm = document.querySelector('#newsletter-form');
 const formNote = document.querySelector('#form-note');
 const catFace = document.querySelector('#cat-face');
+const catStatusText = document.querySelector('#cat-status-text');
+const catStatusDate = document.querySelector('#cat-status-date');
+const catStatus = document.querySelector('#cat-status');
+const portalTrack = document.querySelector('#portal-track');
 const welcomeOverlay = document.querySelector('#welcome-overlay');
 const welcomeClose = document.querySelector('#welcome-close');
 const welcomeDismissToday = document.querySelector('#welcome-dismiss-today');
@@ -128,14 +190,71 @@ if (welcomeOverlay) {
   });
 }
 
-const catFaces = ['ฅ( ̳• ·̫ • ̳ฅ)', '(ฅ´ω`ฅ)', 'ฅ(＾・ω・＾ฅ)', '(=^･ω･^=)', 'ฅ(≚ᄌ≚)'];
-if (catFace) {
-  const previousCatFace = localStorage.getItem('blog-cat-face');
-  const availableCatFaces = catFaces.filter(face => face !== previousCatFace);
-  const nextCatFace = availableCatFaces[Math.floor(Math.random() * availableCatFaces.length)];
-  catFace.textContent = nextCatFace;
-  localStorage.setItem('blog-cat-face', nextCatFace);
+const catStatusStorageKey = 'blog-cat-status-v1';
+
+function renderDailyCatStatus() {
+  if (!catFace || !catStatusText || !catStatusDate || !CAT_STATUS_ITEMS.length) return;
+
+  const now = new Date();
+  const today = welcomeDateKey(now);
+  let saved = null;
+  try {
+    saved = JSON.parse(localStorage.getItem(catStatusStorageKey) || 'null');
+  } catch {
+    saved = null;
+  }
+
+  const isValidSaved = saved && saved.date === today
+    && Number.isInteger(saved.index)
+    && saved.index >= 0
+    && saved.index < CAT_STATUS_ITEMS.length;
+  let index = isValidSaved ? saved.index : Math.floor(Math.random() * CAT_STATUS_ITEMS.length);
+  const changedDay = !isValidSaved;
+  if (changedDay && saved && Number.isInteger(saved.index) && CAT_STATUS_ITEMS.length > 1 && index === saved.index) {
+    index = (index + 1 + Math.floor(Math.random() * (CAT_STATUS_ITEMS.length - 1))) % CAT_STATUS_ITEMS.length;
+  }
+
+  if (changedDay) {
+    try { localStorage.setItem(catStatusStorageKey, JSON.stringify({ date: today, index })); } catch { /* 存储不可用时仍正常显示 */ }
+  }
+
+  const item = CAT_STATUS_ITEMS[index];
+  catFace.textContent = item.kaomoji;
+  catStatusText.textContent = item.text;
+  catStatusDate.textContent = `${now.getMonth() + 1}月${now.getDate()}日`;
+  if (changedDay && catStatus && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    catStatus.classList.remove('cat-status--fade-in');
+    void catStatus.offsetWidth;
+    catStatus.classList.add('cat-status--fade-in');
+  }
 }
+
+renderDailyCatStatus();
+
+function renderSitePortal() {
+  if (!portalTrack || !siteList.length) return;
+  const createGroup = () => {
+    const group = document.createElement('div');
+    group.className = 'portal-group';
+    siteList.forEach(site => {
+      const link = document.createElement('a');
+      link.className = 'portal-link notranslate';
+      link.href = site.url;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.textContent = site.name;
+      group.appendChild(link);
+    });
+    return group;
+  };
+  const firstGroup = createGroup();
+  const secondGroup = createGroup();
+  secondGroup.setAttribute('aria-hidden', 'true');
+  secondGroup.querySelectorAll('a').forEach(link => { link.tabIndex = -1; });
+  portalTrack.replaceChildren(firstGroup, secondGroup);
+}
+
+renderSitePortal();
 
 window.addEventListener('scroll', () => {
   const scrollable = document.documentElement.scrollHeight - window.innerHeight;
@@ -159,6 +278,18 @@ navLinks.querySelectorAll('a').forEach(link => link.addEventListener('click', ()
 }));
 
 const posts = [...document.querySelectorAll('.post-card')].map(card => ({ title: card.querySelector('h3').textContent, category: card.dataset.category }));
+
+// 文章卡片固定错位：用索引做种子，刷新页面后每张卡片保持同一个偏移量；桌面端约 8~24px。
+function seededArticleOffset(index) {
+  const value = Math.sin((index + 1) * 12.9898) * 43758.5453;
+  const normalized = value - Math.floor(value);
+  const magnitude = 8 + normalized * 16;
+  return (index % 2 === 0 ? -1 : 1) * magnitude;
+}
+
+document.querySelectorAll('.post-list > .post-card').forEach((card, index) => {
+  card.style.setProperty('--article-offset', `${seededArticleOffset(index).toFixed(2)}px`);
+});
 function closeSearch() { searchOverlay.classList.remove('open'); searchOverlay.setAttribute('aria-hidden', 'true'); body.classList.remove('no-scroll'); }
 function openSearch() { searchOverlay.classList.add('open'); searchOverlay.setAttribute('aria-hidden', 'false'); body.classList.add('no-scroll'); setTimeout(() => searchInput.focus(), 120); }
 searchToggle.addEventListener('click', openSearch);
@@ -271,109 +402,282 @@ if (lowerSection) {
 }
 
 // 音乐播放器已拆到公共文件 music-player.js：所有页面共用同一份播放与接力逻辑。
-// script.js 只保留页首的律动条，它跟着 <audio> 的 play / pause 事件走。
+// 波浪渲染器通常由 music-waves.js 提供；这里保留无独立脚本时的兼容实现。
 const musicAudio = document.querySelector('#music-audio');
 
-// Retro segmented music meters driven by the existing <audio> element.
-const musicMeterLeft = document.querySelector('#music-meter-left');
-const musicMeterRight = document.querySelector('#music-meter-right');
-const musicMeterBars = [];
-const musicMeterReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-let musicMeterAnimationFrame = 0;
-let musicMetersPlaying = false;
+if (!window.__musicWavesLoaded) {
+// 双侧透明波浪：一个 Canvas 绘制全部层，数据源接入现有自建 <audio>。
+const musicWaveCanvas = document.querySelector('#music-waves');
+const musicWaveContext = musicWaveCanvas?.getContext('2d');
+const musicWaveReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+const musicWaveColors = ['#3E8EF7', '#6FD6FF', '#BFF0FF', '#FFFFFF'];
+const musicWaveTau = Math.PI * 2;
+const musicWaveSqrtTwo = Math.SQRT2;
+const musicWaveSqrtThree = Math.sqrt(3);
+let musicWaveWidth = 0;
+let musicWaveHeight = 0;
+let musicWaveDpr = 1;
+let musicWaveLayers = [];
+let musicWaveFrame = 0;
+let musicWavePlaying = false;
+let musicWaveVisible = !document.hidden;
+let musicWaveLastTime = 0;
+let musicWaveOpacity = 0.12;
+let musicWaveAudioContext;
+let musicWaveSource;
+let musicWaveAnalyser;
+let musicWaveFrequencyData;
+let musicWaveLowEnergy = 0.04;
+let musicWaveHighEnergy = 0.04;
 
-function buildMusicMeters() {
-  [musicMeterLeft, musicMeterRight].forEach(container => {
-    if (!container) return;
-    for (let index = 0; index < 37; index += 1) {
-      const bar = document.createElement('span');
-      bar.className = 'music-meter__bar';
-      const segments = [];
-      for (let segmentIndex = 0; segmentIndex < 10; segmentIndex += 1) {
-        const segment = document.createElement('span');
-        segment.className = 'music-meter__segment';
-        bar.appendChild(segment);
-        segments.push(segment);
-      }
-      const peak = document.createElement('span');
-      peak.className = 'music-meter__peak';
-      bar.appendChild(peak);
-      container.appendChild(bar);
-      musicMeterBars.push({ bar, segments, peak, current: 1, target: 1, peakLevel: 1, peakHoldUntil: 0, nextTargetAt: 0, side: container === musicMeterRight ? 'right' : 'left' });
+function musicWaveClamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function musicWaveHash(value, seed) {
+  const input = Math.sin(value * 127.1 + seed * 311.7) * 43758.5453;
+  return input - Math.floor(input);
+}
+
+function musicWaveNoise(value, seed) {
+  const left = Math.floor(value);
+  const fraction = value - left;
+  const smooth = fraction * fraction * (3 - 2 * fraction);
+  const a = musicWaveHash(left, seed);
+  const b = musicWaveHash(left + 1, seed);
+  return (a + (b - a) * smooth) * 2 - 1;
+}
+
+function createMusicWaveLayer(side, index, layerCount) {
+  const mobile = musicWaveWidth < 768;
+  const depth = layerCount <= 1 ? 0 : index / (layerCount - 1);
+  const amplitude = [28, 16, 35, 22][index] * (mobile ? 0.52 : 1);
+  const alpha = [0.44, 0.3, 0.19, 0.11][index];
+  return {
+    side,
+    base: (mobile ? 6 : 8) + index * (mobile ? 18 : 17),
+    amplitude,
+    wavelength: [104, 173, 247, 137][index],
+    speed: [0.78, 1.12, 0.56, 0.94][index],
+    direction: index === 1 || (side === 'right' && index === 3) ? -1 : 1,
+    phase: Math.random() * musicWaveTau,
+    noiseSeed: Math.random() * 1000 + index * 17,
+    alpha,
+    color: musicWaveColors[index],
+    depth,
+    offset: Math.random() * 1000
+  };
+}
+
+function rebuildMusicWaveLayers() {
+  const layerCount = musicWaveWidth < 768 ? 2 : 4;
+  musicWaveLayers = [];
+  ['left', 'right'].forEach(side => {
+    for (let index = 0; index < layerCount; index += 1) {
+      musicWaveLayers.push(createMusicWaveLayer(side, index, layerCount));
     }
   });
 }
 
-function renderMusicMeter(state) {
-  const activeSegments = Math.max(1, Math.min(10, Math.round(state.current)));
-  state.segments.forEach((segment, index) => segment.classList.toggle('is-on', index < activeSegments));
-  const peakIndex = Math.max(0, Math.min(9, Math.round(state.peakLevel) - 1));
-  state.peak.classList.toggle('is-visible', musicMetersPlaying && !musicMeterReducedMotion.matches && state.peakLevel > 1.1);
-  if (state.side === 'right') {
-    state.peak.style.left = 'auto';
-    state.peak.style.right = `${peakIndex * 8}px`;
-  } else {
-    state.peak.style.right = 'auto';
-    state.peak.style.left = `${peakIndex * 8}px`;
+function resizeMusicWaveCanvas() {
+  if (!musicWaveCanvas || !musicWaveContext) return;
+  musicWaveWidth = window.innerWidth;
+  musicWaveHeight = window.innerHeight;
+  musicWaveDpr = Math.min(window.devicePixelRatio || 1, 2.5);
+  musicWaveCanvas.width = Math.round(musicWaveWidth * musicWaveDpr);
+  musicWaveCanvas.height = Math.round(musicWaveHeight * musicWaveDpr);
+  musicWaveCanvas.style.width = `${musicWaveWidth}px`;
+  musicWaveCanvas.style.height = `${musicWaveHeight}px`;
+  musicWaveContext.setTransform(musicWaveDpr, 0, 0, musicWaveDpr, 0, 0);
+  rebuildMusicWaveLayers();
+  if (!musicWavePlaying || musicWaveReducedMotion.matches) drawMusicWaves(performance.now());
+}
+
+function ensureMusicWaveAnalyser() {
+  if (!musicAudio || musicWaveAnalyser) return;
+  try {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) return;
+    musicWaveAudioContext = new AudioContextClass();
+    if (musicWaveAudioContext.state === 'suspended') void musicWaveAudioContext.resume().catch(() => {});
+    musicWaveSource = musicWaveAudioContext.createMediaElementSource(musicAudio);
+    musicWaveAnalyser = musicWaveAudioContext.createAnalyser();
+    musicWaveAnalyser.fftSize = 128;
+    musicWaveAnalyser.smoothingTimeConstant = 0.82;
+    musicWaveFrequencyData = new Uint8Array(musicWaveAnalyser.frequencyBinCount);
+    musicWaveSource.connect(musicWaveAnalyser);
+    musicWaveAnalyser.connect(musicWaveAudioContext.destination);
+  } catch {
+    try {
+      musicWaveSource?.disconnect();
+      if (musicWaveSource && musicWaveAudioContext) musicWaveSource.connect(musicWaveAudioContext.destination);
+    } catch {}
+    musicWaveAudioContext = undefined;
+    musicWaveSource = undefined;
+    musicWaveAnalyser = undefined;
+    musicWaveFrequencyData = undefined;
   }
 }
 
-function resetMusicMeters() {
-  musicMetersPlaying = false;
-  [musicMeterLeft, musicMeterRight].forEach(container => container?.classList.remove('is-playing'));
-  [musicMeterLeft, musicMeterRight].forEach(container => container?.classList.add('is-paused'));
-  musicMeterBars.forEach(state => {
-    state.current = 1;
-    state.target = 1;
-    state.peakLevel = 1;
-    renderMusicMeter(state);
-  });
-  cancelAnimationFrame(musicMeterAnimationFrame);
+function wakeMusicWaveAudioContext() {
+  ensureMusicWaveAnalyser();
+  if (musicWaveAudioContext?.state === 'suspended') void musicWaveAudioContext.resume().catch(() => {});
 }
 
-function animateMusicMeters(now) {
-  if (!musicMetersPlaying || musicMeterReducedMotion.matches) return;
-  musicMeterBars.forEach(state => {
-    if (now >= state.nextTargetAt) {
-      state.target = 1 + Math.floor(Math.random() * 10);
-      if (state.target > state.peakLevel) {
-        state.peakLevel = state.target;
-        state.peakHoldUntil = now + 300 + Math.random() * 200;
-      }
-      state.nextTargetAt = now + 100 + Math.random() * 50;
+function sampleMusicWaveAudio(deltaMs, now) {
+  let lowTarget = musicWavePlaying ? 0.22 + Math.sin(now * 0.0017) * 0.08 : 0.02;
+  let highTarget = musicWavePlaying ? 0.2 + Math.sin(now * 0.0023 + 1.7) * 0.1 : 0.02;
+  if (musicWaveAnalyser && musicWaveFrequencyData && musicWavePlaying) {
+    musicWaveAnalyser.getByteFrequencyData(musicWaveFrequencyData);
+    const lowEnd = Math.max(1, Math.floor(musicWaveFrequencyData.length * 0.2));
+    const highStart = Math.floor(musicWaveFrequencyData.length * 0.36);
+    let lowSum = 0;
+    let highSum = 0;
+    for (let index = 0; index < musicWaveFrequencyData.length; index += 1) {
+      if (index < lowEnd) lowSum += musicWaveFrequencyData[index];
+      if (index >= highStart) highSum += musicWaveFrequencyData[index];
     }
-    state.current += (state.target - state.current) * .18;
-    if (now > state.peakHoldUntil) state.peakLevel = Math.max(state.current, state.peakLevel - .08);
-    renderMusicMeter(state);
-  });
-  musicMeterAnimationFrame = requestAnimationFrame(animateMusicMeters);
+    lowTarget = lowSum / (lowEnd * 255);
+    highTarget = highSum / (Math.max(1, musicWaveFrequencyData.length - highStart) * 255);
+  }
+  const smoothing = 1 - Math.exp(-Math.max(1, deltaMs) / 160);
+  musicWaveLowEnergy += (lowTarget - musicWaveLowEnergy) * smoothing;
+  musicWaveHighEnergy += (highTarget - musicWaveHighEnergy) * smoothing;
+  if (musicWaveAudioContext?.state === 'suspended' && musicWavePlaying) void musicWaveAudioContext.resume().catch(() => {});
 }
 
-function setMusicMetersPlaying(playing) {
-  if (!playing || musicMeterReducedMotion.matches) {
-    resetMusicMeters();
+function musicWaveX(layer, y, now, amplitudeScale) {
+  const travel = now * 0.05 * layer.speed * (0.42 + musicWaveHighEnergy * 1.55) * layer.direction;
+  const shiftedY = y + travel + layer.offset;
+  const angle = shiftedY / layer.wavelength * musicWaveTau;
+  const displacement = layer.amplitude * amplitudeScale * (
+    0.52 * Math.sin(angle + layer.phase) +
+    0.29 * Math.sin(angle * musicWaveSqrtTwo + layer.phase * 1.73) +
+    0.19 * Math.sin(angle * musicWaveSqrtThree - layer.phase * 0.61) +
+    0.2 * musicWaveNoise(shiftedY / (layer.wavelength * 0.74), layer.noiseSeed)
+  );
+  const edgeInset = Math.max(2, Math.min(100, layer.base + displacement));
+  return layer.side === 'left' ? edgeInset : musicWaveWidth - edgeInset;
+}
+
+function musicWaveRgba(hex, alpha) {
+  const value = hex.replace('#', '');
+  const red = Number.parseInt(value.slice(0, 2), 16);
+  const green = Number.parseInt(value.slice(2, 4), 16);
+  const blue = Number.parseInt(value.slice(4, 6), 16);
+  return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
+}
+
+function drawMusicWaveLayer(layer, now, amplitudeScale, opacityScale) {
+  const ctx = musicWaveContext;
+  const step = musicWaveWidth < 768 ? 12 : 8;
+  const points = [];
+  for (let y = -step; y <= musicWaveHeight + step; y += step) {
+    points.push([musicWaveX(layer, y, now, amplitudeScale), y]);
+  }
+  const edgeX = layer.side === 'left' ? 0 : musicWaveWidth;
+  const gradient = ctx.createLinearGradient(edgeX, 0, points[0][0], 0);
+  const layerAlpha = layer.alpha * opacityScale;
+  if (layer.side === 'left') {
+    gradient.addColorStop(0, musicWaveRgba(layer.color, 0));
+    gradient.addColorStop(1, musicWaveRgba(layer.color, layerAlpha));
+  } else {
+    gradient.addColorStop(0, musicWaveRgba(layer.color, layerAlpha));
+    gradient.addColorStop(1, musicWaveRgba(layer.color, 0));
+  }
+  ctx.beginPath();
+  ctx.moveTo(points[0][0], points[0][1]);
+  points.slice(1).forEach(([x, y]) => ctx.lineTo(x, y));
+  ctx.lineTo(edgeX, musicWaveHeight);
+  ctx.lineTo(edgeX, 0);
+  ctx.closePath();
+  ctx.fillStyle = gradient;
+  ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(points[0][0], points[0][1]);
+  points.slice(1).forEach(([x, y]) => ctx.lineTo(x, y));
+  ctx.strokeStyle = musicWaveRgba(layer.color, Math.min(0.3, layerAlpha * 0.72));
+  ctx.lineWidth = 1;
+  ctx.stroke();
+}
+
+function drawMusicWaves(now = performance.now()) {
+  if (!musicWaveContext || !musicWaveWidth || !musicWaveHeight) return;
+  const deltaMs = musicWaveLastTime ? now - musicWaveLastTime : 16;
+  musicWaveLastTime = now;
+  sampleMusicWaveAudio(deltaMs, now);
+  musicWaveOpacity += ((musicWavePlaying ? 1 : 0.16) - musicWaveOpacity) * (1 - Math.exp(-Math.max(1, deltaMs) / 260));
+  musicWaveContext.clearRect(0, 0, musicWaveWidth, musicWaveHeight);
+  if (musicWaveReducedMotion.matches) {
+    musicWaveLayers.filter(layer => layer.depth === 1).forEach(layer => drawMusicWaveLayer(layer, 0, 0.2, 0.42));
     return;
   }
-  musicMetersPlaying = true;
-  [musicMeterLeft, musicMeterRight].forEach(container => {
-    container?.classList.add('is-playing');
-    container?.classList.remove('is-paused');
-  });
-  const now = performance.now();
-  musicMeterBars.forEach(state => { state.nextTargetAt = now + Math.random() * 140; });
-  cancelAnimationFrame(musicMeterAnimationFrame);
-  musicMeterAnimationFrame = requestAnimationFrame(animateMusicMeters);
+  const amplitudeScale = musicWavePlaying ? 0.74 + musicWaveLowEnergy * 1.15 : 0.08;
+  musicWaveLayers.forEach(layer => drawMusicWaveLayer(layer, now, amplitudeScale, musicWaveOpacity));
 }
 
-if (musicMeterLeft || musicMeterRight) {
-  buildMusicMeters();
-  resetMusicMeters();
-  musicAudio?.addEventListener('play', () => setMusicMetersPlaying(true));
-  musicAudio?.addEventListener('pause', () => setMusicMetersPlaying(false));
-  musicAudio?.addEventListener('ended', () => setMusicMetersPlaying(false));
-  musicMeterReducedMotion.addEventListener?.('change', () => setMusicMetersPlaying(Boolean(musicAudio && !musicAudio.paused)));
-  // 播放器可能在本脚本之前就已经恢复播放（跨页接力），先对齐一次状态。
-  setMusicMetersPlaying(Boolean(musicAudio && !musicAudio.paused));
+function stopMusicWaveFrame() {
+  if (!musicWaveFrame) return;
+  cancelAnimationFrame(musicWaveFrame);
+  musicWaveFrame = 0;
+}
+
+function animateMusicWaves(now) {
+  musicWaveFrame = 0;
+  if (!musicWaveVisible) return;
+  drawMusicWaves(now);
+  if (musicWavePlaying || musicWaveOpacity > 0.18) musicWaveFrame = requestAnimationFrame(animateMusicWaves);
+}
+
+function startMusicWaveFrame() {
+  if (!musicWaveVisible || musicWaveReducedMotion.matches || musicWaveFrame) return;
+  musicWaveFrame = requestAnimationFrame(animateMusicWaves);
+}
+
+function setMusicWavesPlaying(playing) {
+  musicWavePlaying = Boolean(playing);
+  if (musicWavePlaying) {
+    ensureMusicWaveAnalyser();
+    startMusicWaveFrame();
+  } else if (!musicWaveReducedMotion.matches && musicWaveVisible) {
+    startMusicWaveFrame();
+  } else {
+    stopMusicWaveFrame();
+    drawMusicWaves(performance.now());
+  }
+}
+
+// 保留旧版独立联动入口，并提供语义更清晰的新入口。
+window.setMusicMetersPlaying = setMusicWavesPlaying;
+window.setMusicWavesPlaying = setMusicWavesPlaying;
+
+if (musicWaveCanvas && musicWaveContext) {
+  resizeMusicWaveCanvas();
+  window.addEventListener('resize', resizeMusicWaveCanvas, { passive: true });
+  ['music-play', 'music-prev', 'music-next'].forEach(id => {
+    document.querySelector(`#${id}`)?.addEventListener('pointerdown', wakeMusicWaveAudioContext, { passive: true });
+  });
+  musicAudio?.addEventListener('play', () => setMusicWavesPlaying(true));
+  musicAudio?.addEventListener('pause', () => setMusicWavesPlaying(false));
+  musicAudio?.addEventListener('ended', () => setMusicWavesPlaying(false));
+  musicWaveReducedMotion.addEventListener?.('change', () => {
+    stopMusicWaveFrame();
+    drawMusicWaves(performance.now());
+    if (musicWavePlaying && !musicWaveReducedMotion.matches) startMusicWaveFrame();
+  });
+  document.addEventListener('visibilitychange', () => {
+    musicWaveVisible = !document.hidden;
+    if (!musicWaveVisible) {
+      stopMusicWaveFrame();
+      return;
+    }
+    musicWaveLastTime = performance.now();
+    drawMusicWaves(musicWaveLastTime);
+    if (musicWavePlaying && !musicWaveReducedMotion.matches) startMusicWaveFrame();
+  });
+  // 播放器可能在本脚本之前已经恢复播放（跨页接力），先对齐一次状态。
+  setMusicWavesPlaying(Boolean(musicAudio && !musicAudio.paused));
+}
 }
 
 

@@ -30,6 +30,7 @@
   const SAVE_INTERVAL = 2500; // 播放期间每 2.5 秒静默保存一次
   const SEEK_STEPS = 1000; // 进度条内部精度
   const RESUME_LABEL = '点我继续听喵'; // 艾露猫口吻，按需求保留原文
+  const EXTERNAL_SEARCH_BASE = 'https://music.youtube.com/search?q=';
   const MODES = ['sequential', 'loop', 'random'];
 
   // 歌单：加歌只改这里，页面不用动。
@@ -57,6 +58,7 @@
   const playButton = $('#music-play');
   const prevButton = $('#music-prev');
   const nextButton = $('#music-next');
+  const externalButton = $('#music-external');
   const modeSelect = $('#music-mode');
   const playlistEl = $('#music-playlist');
   const collapseButton = $('#music-collapse');
@@ -73,6 +75,7 @@
   let restoring = false; // 恢复过程中不要覆盖旧状态
   let resumeButton = null;
   let saveTimer = 0;
+  let localPlaybackUnavailable = false;
 
   // ---------------------------------------------------------------- 小工具
   function normalizeIndex(value) {
@@ -89,6 +92,22 @@
   function setMusicStatus(message, isError = false) {
     if (statusEl) statusEl.textContent = message;
     player.classList.toggle('is-error', isError);
+  }
+
+  function externalTrackUrl(track) {
+    if (track?.externalUrl) return track.externalUrl;
+    const query = `${track?.title || 'Monster Hunter music'} Monster Hunter`;
+    return `${EXTERNAL_SEARCH_BASE}${encodeURIComponent(query)}`;
+  }
+
+  function openExternalTrack() {
+    const track = PLAYLIST[index];
+    if (!track) return;
+    intendedPlaying = false;
+    audio.pause();
+    savePlayerState();
+    const popup = window.open(externalTrackUrl(track), '_blank', 'noopener,noreferrer');
+    setMusicStatus(popup ? '已打开外接播放器' : '请允许浏览器打开新标签页');
   }
 
   function setSliderFill(input, percent) {
@@ -154,6 +173,7 @@
     const track = PLAYLIST[target];
     if (!track) return;
     index = target;
+    localPlaybackUnavailable = false;
     if (titleEl) titleEl.textContent = track.title;
     audio.src = track.src;
     audio.load();
@@ -170,6 +190,10 @@
   }
 
   async function playMusic() {
+    if (localPlaybackUnavailable) {
+      openExternalTrack();
+      return;
+    }
     intendedPlaying = true;
     await startPlayback('正在加载…');
   }
@@ -417,6 +441,7 @@
     playButton?.addEventListener('click', togglePlayback);
     prevButton?.addEventListener('click', previousMusic);
     nextButton?.addEventListener('click', nextMusic);
+    externalButton?.addEventListener('click', openExternalTrack);
 
     modeSelect?.addEventListener('change', () => {
       applyMode(modeSelect.value);
@@ -479,8 +504,9 @@
     audio.addEventListener('ended', onEnded);
     audio.addEventListener('error', () => {
       if (!audio.getAttribute('src')) return;
+      localPlaybackUnavailable = true;
       intendedPlaying = false;
-      setMusicStatus('当前音频格式无法播放，请换用 MP3 文件', true);
+      setMusicStatus('本地音频不可用，点播放或↗外接', true);
       updateMusicControls();
     });
 
