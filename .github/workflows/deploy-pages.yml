@@ -31,6 +31,8 @@ jobs:
           mkdir -p _site
           cp *.html *.css *.js .nojekyll _site/
           cp -r assets docs _site/
+          # 绑定了自定义域名时，CNAME 必须一起发布，否则每次部署都会把域名冲掉
+          if [ -f CNAME ]; then cp CNAME _site/; echo "已包含 CNAME: $(cat CNAME)"; fi
           echo "发布目录大小：$(du -sh _site | cut -f1)"
           echo "发布文件数：$(find _site -type f | wc -l)"
       - name: Upload site
