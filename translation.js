@@ -1,16 +1,27 @@
 (() => {
   'use strict';
 
-  // translate.js 固定版本 3.18.66（库内版本 3.18.66.20250930）。
-  // CDN: https://cdn.staticfile.net/translate.js/3.18.66/translate.js
-  // 使用库自带的 client.edge 模式；本项目不直接调用翻译 API，不配置 key 或后端。
-  const buttons = [...document.querySelectorAll('[data-language-toggle]')];
-  if (!buttons.length) return;
+  const selects = [...document.querySelectorAll('[data-language-select]')];
+  if (!selects.length) return;
+
   const STORAGE_KEY = 'blog-language';
-  const TRANSLATING = '本喵正在翻译喵，稍等一下下！';
-  const LOAD_FAILED = '翻译组件离家出走了喵';
-  const TRANSLATE_FAILED = '翻译暂时迷路了喵，请稍后再试！';
-  const requests = new Set();
+  const API_HOSTS = [
+    'https://api.translate.zvo.cn/translate.json',
+    'https://america.api.translate.zvo.cn/translate.json'
+  ];
+  const LANGUAGES = {
+    zh: { api: 'chinese_simplified', html: 'zh-CN' },
+    en: { api: 'english', html: 'en' },
+    ru: { api: 'russian', html: 'ru' }
+  };
+  const TRANSLATING = {
+    en: '正在翻译为英语，请稍候…',
+    ru: '正在翻译为俄语，请稍候…'
+  };
+  const LOAD_FAILED = '翻译服务暂时不可用，请检查网络后重试。';
+  const TRANSLATE_FAILED = '翻译暂时失败，请稍后再试。';
+  const SKIP_TAGS = new Set(['SCRIPT', 'STYLE', 'NOSCRIPT', 'PRE', 'CODE', 'KBD', 'SAMP', 'TEXTAREA', 'OPTION']);
+
   const status = document.createElement('div');
   status.id = 'translation-status';
   status.className = 'translation-status notranslate';
@@ -21,20 +32,23 @@
   status.hidden = true;
   document.body.append(status);
 
-  let engine = null;
-  let loader = null;
+  const originals = new Map();
+  const rendered = new Map();
   let current = 'zh';
   let wanted = 'zh';
   let revision = 0;
   let busy = false;
-  let deadline = null;
   let statusTimer = null;
-  let finishTimer = null;
-  let activeJob = null;
+  let mutationTimer = null;
+  let suppressObserver = false;
 
   function preference() {
-    try { return localStorage.getItem(STORAGE_KEY) === 'en' ? 'en' : 'zh'; }
-    catch { return 'zh'; }
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      return LANGUAGES[saved] ? saved : 'zh';
+    } catch {
+      return 'zh';
+    }
   }
 
   function savePreference(language) {
@@ -54,186 +68,191 @@
     status.textContent = '';
   }
 
-  function updateButtons(state = 'ready') {
-    document.documentElement.lang = current === 'en' ? 'en' : 'zh-CN';
+  function updateControls(state = 'ready') {
+    document.documentElement.lang = LANGUAGES[current].html;
     document.documentElement.dataset.translationState = state;
-    buttons.forEach(button => {
-      button.textContent = current === 'en' ? '中' : '译/EN';
-      button.disabled = busy;
-      button.setAttribute('aria-pressed', String(current === 'en'));
-      button.setAttribute('aria-busy', String(busy));
-      button.setAttribute('aria-label', current === 'en' ? '切换为中文' : '切换为英文');
+    selects.forEach(select => {
+      select.value = busy ? wanted : current;
+      select.disabled = busy;
+      select.setAttribute('aria-busy', String(busy));
     });
   }
 
-  function loadLibrary() {
-    if (window.translate?.version && typeof window.translate.execute === 'function') return Promise.resolve(window.translate);
-    const script = document.querySelector('#translate-cdn');
-    if (!script || script.dataset.failed === 'true') return Promise.reject(new Error(LOAD_FAILED));
-    if (loader) return loader;
-    loader = new Promise((resolve, reject) => {
-      const cleanup = () => {
-        clearTimeout(timer);
-        script.removeEventListener('load', loaded);
-        script.removeEventListener('error', failed);
-      };
-      const loaded = () => {
-        cleanup();
-        if (window.translate?.version && typeof window.translate.execute === 'function') resolve(window.translate);
-        else reject(new Error(LOAD_FAILED));
-      };
-      const failed = () => { cleanup(); reject(new Error(LOAD_FAILED)); };
-      const timer = setTimeout(failed, 12000);
-      script.addEventListener('load', loaded, { once: true });
-      script.addEventListener('error', failed, { once: true });
-    }).catch(error => { loader = null; throw error; });
-    return loader;
+  function isTranslatable(node) {
+    const parent = node.parentElement;
+    if (!parent || !node.nodeValue.trim()) return false;
+    if (SKIP_TAGS.has(parent.tagName)) return false;
+    if (parent.closest('[translate="no"], .notranslate')) return false;
+    return true;
   }
 
-  function stopRequests() {
-    // 取消库已经发出的请求，避免超时后旧响应又把恢复的中文覆盖掉。
-    for (const xhr of requests) {
-      xhr.onreadystatechange = null;
-      xhr.abort();
+  function collectTextNodes(root = document.body) {
+    const nodes = [];
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    let node;
+    while ((node = walker.nextNode())) {
+      if (isTranslatable(node)) nodes.push(node);
     }
-    requests.clear();
+    return nodes;
+  }
+
+  function rememberOriginal(node) {
+    if (!originals.has(node)) originals.set(node, node.nodeValue);
+    return originals.get(node);
   }
 
   function restoreOriginal() {
-    if (!engine) return;
-    engine.reset({ selectLanguageRefreshRender: false, notTranslateTip: false });
-    engine.to = 'chinese_simplified';
-    engine.storage.set('to', 'chinese_simplified');
+    suppressObserver = true;
+    for (const [node, value] of originals) {
+      if (node.isConnected) node.nodeValue = value;
+    }
+    suppressObserver = false;
+    originals.clear();
+    rendered.clear();
   }
 
-  function failTranslation(message = TRANSLATE_FAILED) {
-    if (wanted !== 'en') return;
-    wanted = 'zh';
-    revision++;
-    activeJob = null;
-    clearTimeout(deadline);
-    clearTimeout(finishTimer);
-    stopRequests();
-    // 让库当前回调退出后再还原，保留 DOM 节点及原来的事件监听。
-    finishTimer = setTimeout(() => {
-      try { restoreOriginal(); } catch { /* 原页面始终可见，不隐藏正文。 */ }
-      current = 'zh';
-      busy = false;
-      updateButtons('error');
-      showStatus(message, true);
-    }, 20);
-  }
-
-  function configureLibrary(library) {
-    if (engine) return;
-    engine = library;
-    engine.selectLanguageTag.show = false;
-    engine.autoDiscriminateLocalLanguage = false;
-    engine.language.setLocal('chinese_simplified');
-    engine.service.use('client.edge');
-    engine.ignore.tag = [...new Set([...engine.ignore.tag, 'pre', 'code', 'kbd', 'samp', 'canvas', 'svg', 'noscript'])];
-    engine.ignore.class = [...new Set([...engine.ignore.class, 'notranslate'])];
-    document.querySelectorAll('[translate="no"]').forEach(element => element.classList.add('notranslate'));
-    engine.listener.start(); // 展开按钮、搜索结果等动态文字也跟随当前语言。
-
-    // 只封装库自身的请求回调，不创建新的翻译接口；超时和晚到的响应均可安全取消。
-    const send = engine.request.send.bind(engine.request);
-    engine.request.send = function(...args) {
-      const requestRevision = revision;
-      const success = args[3];
-      args[3] = data => {
-        if (requestRevision !== revision || wanted !== 'en') return;
-        try { success(data); } catch { failTranslation(); }
-      };
-      args[7] = () => {
-        if (requestRevision === revision && wanted === 'en') failTranslation();
-      };
-      const xhr = send(...args);
-      if (xhr) {
-        requests.add(xhr);
-        xhr.timeout = 20000;
-        const failed = () => {
-          if (requestRevision === revision && wanted === 'en') failTranslation();
-        };
-        xhr.addEventListener('error', failed, { once: true });
-        xhr.addEventListener('timeout', failed, { once: true });
-        xhr.addEventListener('loadend', () => requests.delete(xhr), { once: true });
+  async function requestBatch(texts, target, signal) {
+    const body = new URLSearchParams({
+      from: 'auto',
+      to: LANGUAGES[target].api,
+      text: JSON.stringify(texts)
+    });
+    let lastError = null;
+    for (const endpoint of API_HOSTS) {
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+          body,
+          signal
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        if (data.result !== 1 || !Array.isArray(data.text) || data.text.length !== texts.length) {
+          throw new Error(data.info || 'invalid translation response');
+        }
+        return data.text;
+      } catch (error) {
+        lastError = error;
       }
-      return xhr;
-    };
-    engine.lifecycle.execute.trigger.push(() => wanted === 'en');
-    engine.lifecycle.execute.start.push(data => {
-      if (activeJob && data.to === 'english') activeJob.uuids.add(data.uuid);
+    }
+    throw lastError || new Error(LOAD_FAILED);
+  }
+
+  async function translateNodes(nodes, target, operation) {
+    const unique = [];
+    const seen = new Set();
+    nodes.forEach(node => {
+      if (!node.isConnected || !isTranslatable(node)) return;
+      const source = rememberOriginal(node).trim();
+      if (!source || seen.has(source)) return;
+      seen.add(source);
+      unique.push(source);
     });
-    engine.lifecycle.execute.translateNetworkAfter.push(data => {
-      if (wanted === 'en' && data.result !== 1) failTranslation();
-    });
-    engine.lifecycle.execute.renderFinish.push((uuid, to) => {
-      if (wanted !== 'en' || to !== 'english' || !activeJob?.uuids.has(uuid)) return;
-      activeJob.uuids.delete(uuid);
-      if (activeJob.uuids.size > 0) return;
-      const completedRevision = revision;
-      clearTimeout(finishTimer);
-      finishTimer = setTimeout(() => {
-        if (completedRevision !== revision || wanted !== 'en') return;
-        clearTimeout(deadline);
-        activeJob = null;
-        current = 'en';
-        busy = false;
-        savePreference('en');
-        updateButtons();
-        hideStatus();
-      }, 0);
-    });
+    if (!unique.length) return;
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30000);
+    try {
+      const translated = [];
+      for (let index = 0; index < unique.length; index += 80) {
+        const chunk = unique.slice(index, index + 80);
+        translated.push(...await requestBatch(chunk, target, controller.signal));
+      }
+      if (operation !== revision || wanted !== target) return;
+      const dictionary = new Map(unique.map((source, index) => [source, translated[index]]));
+      suppressObserver = true;
+      nodes.forEach(node => {
+        if (!node.isConnected) return;
+        const source = rememberOriginal(node).trim();
+        const value = dictionary.get(source);
+        if (value == null) return;
+        const original = rememberOriginal(node);
+        const prefix = original.match(/^\s*/)?.[0] || '';
+        const suffix = original.match(/\s*$/)?.[0] || '';
+        node.nodeValue = `${prefix}${value}${suffix}`;
+        rendered.set(node, node.nodeValue);
+      });
+      suppressObserver = false;
+    } finally {
+      clearTimeout(timeout);
+    }
   }
 
   async function switchLanguage(language) {
+    if (!LANGUAGES[language] || (language === current && !busy)) {
+      updateControls();
+      return;
+    }
     const operation = ++revision;
     wanted = language;
-    activeJob = null;
-    clearTimeout(deadline);
-    clearTimeout(finishTimer);
-    stopRequests();
+    busy = language !== 'zh';
+    updateControls(busy ? 'loading' : 'ready');
+    restoreOriginal();
+
     if (language === 'zh') {
-      try { restoreOriginal(); } catch { /* CDN 不可用也能保留中文页面。 */ }
       current = 'zh';
-      busy = false;
       savePreference('zh');
-      updateButtons();
       hideStatus();
       return;
     }
 
-    busy = true;
-    updateButtons('loading');
-    showStatus(TRANSLATING);
-    let library;
-    try { library = await loadLibrary(); }
-    catch {
-      if (operation === revision) failTranslation(LOAD_FAILED);
-      return;
-    }
-    if (operation !== revision) return;
+    showStatus(TRANSLATING[language]);
     try {
-      configureLibrary(library);
-      activeJob = { uuids: new Set() };
-      deadline = setTimeout(() => failTranslation(), 30000);
-      // 必须使用 english，不能使用旧版 en（旧版属于已废弃的 Google 组件）。
-      engine.changeLanguage('english');
-    } catch { failTranslation(); }
+      await translateNodes(collectTextNodes(), language, operation);
+      if (operation !== revision || wanted !== language) return;
+      current = language;
+      busy = false;
+      savePreference(language);
+      updateControls();
+      hideStatus();
+    } catch (error) {
+      if (operation !== revision) return;
+      restoreOriginal();
+      current = 'zh';
+      wanted = 'zh';
+      busy = false;
+      updateControls('error');
+      showStatus(error.name === 'AbortError' ? LOAD_FAILED : TRANSLATE_FAILED, true);
+    }
   }
 
-  buttons.forEach(button => button.addEventListener('click', () => {
-    if (busy) return;
+  function translateMutations(mutations) {
+    if (suppressObserver || current === 'zh' || busy) return;
+    const changed = new Set();
+    mutations.forEach(mutation => {
+      if (mutation.type === 'characterData') {
+        if (rendered.has(mutation.target) && rendered.get(mutation.target) !== mutation.target.nodeValue) {
+          originals.set(mutation.target, mutation.target.nodeValue);
+          changed.add(mutation.target);
+        }
+      } else {
+        mutation.addedNodes.forEach(node => {
+          if (node.nodeType === Node.TEXT_NODE && isTranslatable(node)) changed.add(node);
+          if (node.nodeType === Node.ELEMENT_NODE) collectTextNodes(node).forEach(textNode => changed.add(textNode));
+        });
+      }
+    });
+    if (!changed.size) return;
+    clearTimeout(mutationTimer);
+    mutationTimer = setTimeout(() => {
+      void translateNodes([...changed], current, revision);
+    }, 80);
+  }
+
+  const observer = new MutationObserver(translateMutations);
+  observer.observe(document.body, { childList: true, characterData: true, subtree: true });
+
+  selects.forEach(select => select.addEventListener('change', () => {
     document.querySelector('.nav-links')?.classList.remove('open');
     document.querySelector('#menu-toggle')?.setAttribute('aria-expanded', 'false');
-    void switchLanguage(current === 'en' ? 'zh' : 'en');
+    void switchLanguage(select.value);
   }));
   window.addEventListener('storage', event => {
     if (event.key === STORAGE_KEY && preference() !== wanted) void switchLanguage(preference());
   });
-  updateButtons();
-  const applyPreference = () => { if (preference() === 'en') void switchLanguage('en'); };
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applyPreference, { once: true });
-  else applyPreference();
+
+  updateControls();
+  const saved = preference();
+  if (saved !== 'zh') void switchLanguage(saved);
 })();

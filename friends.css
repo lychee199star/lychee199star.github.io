@@ -4,8 +4,8 @@
 .friends-nav { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 18px 28px; max-width: 1160px; margin: auto; padding: 22px 28px; }
 .friends-brand { font: 700 19px/1.6 'KaiTi', 'STKaiti', serif; }
 .friends-nav-links { display: flex; flex-wrap: wrap; gap: 24px; font-size: 13px; }
-.friends-nav-links a, .friends-nav-links .translation-toggle { padding-block: 5px; color: #c6d1c8; border-bottom: 2px solid transparent; }
-.friends-nav-links a:hover, .friends-nav-links .translation-toggle:hover, .friends-nav-links [aria-current='page'] { color: #f2e4c0; border-bottom-color: #d9b875; }
+.friends-nav-links a, .friends-nav-links .language-picker { padding-block: 5px; color: #c6d1c8; border-bottom: 2px solid transparent; }
+.friends-nav-links a:hover, .friends-nav-links .language-picker:hover, .friends-nav-links [aria-current='page'] { color: #f2e4c0; border-bottom-color: #d9b875; }
 .friends-main { max-width: 1160px; margin: auto; padding: 66px 28px 70px; }
 /* CSS 木纹拼板，不需要额外纹理图片。 */
 .wood-panel { position: relative; border: 3px solid #5C3A1E; border-radius: 6px; background-color: #8B5E34; background-image: repeating-linear-gradient(2deg, transparent 0 7px, #39210e22 8px 9px, transparent 10px 16px), repeating-linear-gradient(0deg, transparent 0 67px, #5c3a1e 68px 71px, #b5885044 72px 74px), linear-gradient(100deg, #996b3f, #744a28 65%, #8B5E34); box-shadow: inset 0 0 0 2px #c7976255, 0 15px 30px #04130e55; }

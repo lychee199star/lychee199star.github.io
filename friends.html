@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#183c37" />
     <meta name="description" content="定南の 碎碎念的同行猎人名录：艾露猫村口的友链告示板。" />
     <title>同行猎人名录 · 定南の 碎碎念</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=20261024" />
     <link rel="stylesheet" href="friends.css" />
   </head>
   <body class="blog-page friends-page">
@@ -16,7 +16,6 @@
         <div class="catcar-transition__dots" aria-hidden="true"><i></i><i></i><i></i></div>
       </div>
     </div>
-    <canvas id="music-waves" aria-hidden="true"></canvas>
     <header class="friends-header">
       <nav class="friends-nav" aria-label="主导航">
         <a class="friends-brand" href="index.html">🐾 定南の 碎碎念</a>
@@ -25,7 +24,14 @@
           <a class="tilt" href="index.html#posts">文章</a>
           <a class="tilt" href="index.html#about">关于我</a>
           <a class="tilt" href="friends.html" aria-current="page">友链</a>
-          <button class="translation-toggle tilt notranslate" type="button" data-language-toggle translate="no" lang="zh-CN" title="机翻仅供参喵" aria-label="切换为英文" aria-pressed="false">译/EN</button>
+          <label class="language-picker notranslate" translate="no">
+            <span class="sr-only">页面语言</span>
+            <select class="translation-select notranslate" data-language-select aria-label="选择页面语言" title="机翻仅供参喵">
+              <option value="zh">中文</option>
+              <option value="en">English</option>
+              <option value="ru">Русский</option>
+            </select>
+          </label>
         </div>
       </nav>
     </header>
@@ -131,12 +137,76 @@
     <!-- 公共播放器：与首页同一份代码，负责接着上一页的歌和进度继续播。 -->
     <script src="music-player.js"></script>
     <script src="catcar-transition.js"></script>
-    <script src="music-waves.js"></script>
+    <script src="assets/lib/wavesurfer.min.js"></script>
+    <script src="music-waves.js?v=20261022"></script>
     <script src="tilt.js"></script>
     <!-- 此页不加载首页 script.js，避免调用首页专属弹窗。 -->
     <script src="friends.js"></script>
-    <!-- translate.js 3.18.66；CDN: https://cdn.staticfile.net/translate.js/3.18.66/translate.js -->
-    <script id="translate-cdn" src="https://cdn.staticfile.net/translate.js/3.18.66/translate.js" async onerror="this.dataset.failed='true'"></script>
-    <script src="translation.js"></script>
+    <!-- 固定 translate.js 3.18.66；defer 保证翻译引擎先于本站控制脚本执行。 -->
+    <script id="translate-cdn" src="https://cdn.staticfile.net/translate.js/3.18.66/translate.js" defer onerror="this.dataset.failed='true'"></script>
+    <script src="translation.js" defer></script>
+    <!-- 呆猫 Live2D 桌宠：与首页同一只呆猫，模型与渲染库均本地化 -->
+    <script src="assets/live2d/lib/oh-my-live2d.min.js"></script>
+    <script>
+      if (window.OML2D) {
+        window.__daimeow = window.OML2D.loadOml2d({
+          models: [{ path: 'assets/live2d/daimeow/daimeow.model3.json' }],
+          mobileDisplay: false,
+          transitionTime: 1000,
+          statusBar: { restMessage: '看板猫休息中' },
+          menus: {
+            items: [
+              { id: 'Rest', icon: 'icon-rest', title: '休息', onClick: function (i) { var t; i.statusBarOpen((t = i.options.statusBar) == null ? void 0 : t.restMessage), i.clearTips(), i.setStatusBarClickEvent(function () { i.statusBarClose(), i.stageSlideIn(), i.statusBarClearEvents(); }), i.stageSlideOut(); } },
+              { id: 'SwitchModelClothes', icon: 'icon-skin', title: '切换衣服', onClick: function (i) { i.loadNextModelClothes(); } },
+              { id: 'SwitchModel', icon: 'icon-switch', title: '切换模型', onClick: function (i) { i.loadNextModel(); } }
+            ]
+          },
+          tips: {
+            idleTips: {
+              message: [
+                '别戳了喵，再戳就收费了喵！',
+                '本喵在呢，找本喵干嘛喵？',
+                '鼠标别晃啦，本喵眼都要转花了喵！',
+                '听歌吗？这里放的音乐还不错的喵。',
+                '老大，今天也要加油喵！'
+              ],
+              duration: 4000,
+              interval: 15000
+            },
+            welcomeTips: {
+              message: {
+                daybreak: '早啊老大！新的一天也要元气满满喵！',
+                morning: '上午好喵！本喵刚巡逻完村子喵。',
+                noon: '中午啦，老大记得吃饭喵！',
+                afternoon: '下午好喵，困了就摸摸本喵提神喵！',
+                dusk: '天快黑了，老大今天过得怎么样喵？',
+                night: '老大来啦喵！这么晚还在刷博客，早点睡喵！',
+                lateNight: '夜深了喵，老大还醒着的话，本喵也陪着喵。',
+                weeHours: '还不睡喵？本喵陪你一起熬夜喵……'
+              },
+              duration: 6000
+            }
+          }
+        });
+        document.addEventListener('click', function (event) {
+          const stage = document.querySelector('#oml2d-stage');
+          const instance = window.__daimeow;
+          if (!stage || !instance) return;
+          const rect = stage.getBoundingClientRect();
+          const hitX = event.clientX >= rect.left && event.clientX <= rect.right;
+          const hitY = event.clientY >= rect.top - 60 && event.clientY <= rect.bottom;
+          if (hitX && hitY) {
+            const lines = [
+              '别戳了喵，再戳就收费了喵！',
+              '本喵在呢，找本喵干嘛喵？',
+              '鼠标别晃啦，本喵眼都要转花了喵！',
+              '听歌吗？这里放的音乐还不错的喵。',
+              '老大，今天也要加油喵！'
+            ];
+            instance.tipsMessage(lines[Math.floor(Math.random() * lines.length)], 3500, 3);
+          }
+        });
+      }
+    </script>
   </body>
 </html>

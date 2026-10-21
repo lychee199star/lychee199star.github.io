@@ -261,12 +261,61 @@ window.addEventListener('scroll', () => {
   progress.style.width = `${scrollable ? (window.scrollY / scrollable) * 100 : 0}%`;
 }, { passive: true });
 
+// 首屏滚动转换：把滚动进度写入 --hero-scroll（0~1），CSS 负责全部变换。
+const heroSection = document.querySelector('.site-header');
+if (heroSection && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  let heroTicking = false;
+  const updateHeroScroll = () => {
+    const height = Math.max(1, heroSection.offsetHeight);
+    const progress = Math.min(1, Math.max(0, window.scrollY / height));
+    document.documentElement.style.setProperty('--hero-scroll', progress.toFixed(4));
+    heroTicking = false;
+  };
+  window.addEventListener('scroll', () => {
+    if (!heroTicking) {
+      heroTicking = true;
+      window.requestAnimationFrame(updateHeroScroll);
+    }
+  }, { passive: true });
+  updateHeroScroll();
+}
+
 themeToggle.addEventListener('click', () => {
   body.classList.toggle('dark');
   themeToggle.textContent = body.classList.contains('dark') ? '☼' : '◐';
   localStorage.setItem('blog-theme', body.classList.contains('dark') ? 'dark' : 'light');
 });
 if (localStorage.getItem('blog-theme') === 'dark') { body.classList.add('dark'); themeToggle.textContent = '☼'; }
+
+// 顶部菜单滑动下划线：悬停时滑到目标项，离开后滑回激活项。
+const navUnderlineHost = document.querySelector('.nav-links');
+if (navUnderlineHost && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+  const underline = document.createElement('span');
+  underline.className = 'nav-underline';
+  underline.setAttribute('aria-hidden', 'true');
+  navUnderlineHost.appendChild(underline);
+  const navItems = navUnderlineHost.querySelectorAll('a, .translation-toggle');
+  const activeNavItem = navUnderlineHost.querySelector('.active') || navItems[0];
+  let lastNavItem = activeNavItem;
+  const moveNavUnderline = (item) => {
+    if (!item) return;
+    lastNavItem = item;
+    underline.style.opacity = '1';
+    underline.style.left = `${item.offsetLeft}px`;
+    underline.style.width = `${item.offsetWidth}px`;
+  };
+  navItems.forEach((item) => {
+    item.addEventListener('mouseenter', () => moveNavUnderline(item));
+    item.addEventListener('focus', () => moveNavUnderline(item));
+  });
+  navUnderlineHost.addEventListener('mouseleave', () => moveNavUnderline(activeNavItem));
+  navUnderlineHost.addEventListener('focusout', (event) => {
+    if (!navUnderlineHost.contains(event.relatedTarget)) moveNavUnderline(activeNavItem);
+  });
+  window.addEventListener('resize', () => moveNavUnderline(lastNavItem), { passive: true });
+  window.requestAnimationFrame(() => moveNavUnderline(activeNavItem));
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => moveNavUnderline(lastNavItem));
+}
 
 menuToggle.addEventListener('click', () => {
   const open = navLinks.classList.toggle('open');
@@ -277,9 +326,39 @@ navLinks.querySelectorAll('a').forEach(link => link.addEventListener('click', ()
   navLinks.classList.remove('open');
 }));
 
-const posts = [...document.querySelectorAll('.post-card')].map(card => ({ title: card.querySelector('h3').textContent, category: card.dataset.category }));
+const postList = document.querySelector('.post-list');
+const categoryFilter = document.querySelector('.category-filter');
 
-// 文章卡片固定错位：用索引做种子，刷新页面后每张卡片保持同一个偏移量；桌面端约 8~24px。
+// 以后有新分类在这里加一行；数组里的文字必须和文章卡片原分类一致。
+const categoryMap = {
+  生活: ['电脑与数码', '高考后记', '学校生活'],
+  学习: ['前端', '俄语学习', '吐槽'],
+  娱乐: ['阅读', '随笔', '游戏']
+};
+
+// 兼容当前文章里已经使用过的旧分类名，新增分类优先直接补到上面的配置表。
+const legacyCategoryMap = { 学习: '学习', 俄语: '俄语学习', 疑惑: '前端' };
+const groupOrder = Object.keys(categoryMap);
+const postCards = postList ? [...postList.children].filter(item => item.matches('.post-card')) : [];
+
+function parsePostDate(card) {
+  const raw = card.dataset.date || card.querySelector('.post-meta span')?.textContent.trim() || '';
+  const normalized = raw.replace(/[./]/g, '-');
+  if (/^\d{4}-\d{2}-\d{2}$/.test(normalized)) {
+    card.dataset.date = normalized;
+    return normalized;
+  }
+  return '0000-00-00';
+}
+
+function resolvePostGroup(card) {
+  const visibleCategory = card.querySelector('.post-meta span:nth-child(2)')?.textContent || '';
+  const originalCategory = (visibleCategory || card.dataset.category || '').trim();
+  card.dataset.category = originalCategory;
+  const directGroup = groupOrder.find(group => categoryMap[group].includes(originalCategory));
+  return directGroup || legacyCategoryMap[originalCategory] || '娱乐';
+}
+
 function seededArticleOffset(index) {
   const value = Math.sin((index + 1) * 12.9898) * 43758.5453;
   const normalized = value - Math.floor(value);
@@ -287,8 +366,122 @@ function seededArticleOffset(index) {
   return (index % 2 === 0 ? -1 : 1) * magnitude;
 }
 
-document.querySelectorAll('.post-list > .post-card').forEach((card, index) => {
-  card.style.setProperty('--article-offset', `${seededArticleOffset(index).toFixed(2)}px`);
+const postRecords = postCards.map((card, index) => {
+  const group = resolvePostGroup(card);
+  return {
+    card,
+    index,
+    title: card.querySelector('h3')?.textContent.trim() || '',
+    category: card.dataset.category || '',
+    date: parsePostDate(card),
+    group
+  };
+});
+const groupElements = new Map();
+
+if (postList) {
+  postList.replaceChildren();
+  groupOrder.forEach(groupName => {
+    const group = document.createElement('section');
+    group.className = 'post-group';
+    group.dataset.group = groupName;
+    group.setAttribute('aria-labelledby', `post-group-${groupName}`);
+
+    const toggle = document.createElement('button');
+    toggle.className = 'post-group__toggle';
+    toggle.type = 'button';
+    toggle.id = `post-group-${groupName}`;
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.innerHTML = `<span class="post-group__name"><span class="post-group__arrow" aria-hidden="true">▸</span>${groupName}</span><span class="post-group__count">${groupName} · 0</span>`;
+
+    const items = document.createElement('div');
+    items.className = 'post-group__items';
+    items.setAttribute('aria-hidden', 'true');
+    const inner = document.createElement('div');
+    inner.className = 'post-group__items-inner';
+    items.append(inner);
+    group.append(toggle, items);
+    postList.append(group);
+    groupElements.set(groupName, { group, toggle, items, inner });
+  });
+
+  postRecords.sort((a, b) => b.date.localeCompare(a.date));
+  postRecords.forEach(({ card, group, index }) => {
+    const groupState = groupElements.get(group);
+    if (!groupState) return;
+    groupState.inner.append(card);
+    card.style.setProperty('--article-offset', `${seededArticleOffset(index).toFixed(2)}px`);
+  });
+
+  groupElements.forEach(({ group, toggle, items, inner }, groupName) => {
+    const count = inner.children.length;
+    toggle.querySelector('.post-group__count').textContent = `${groupName} · ${count}`;
+    toggle.addEventListener('click', () => {
+      setGroupOpen(groupName, !group.classList.contains('is-open'));
+    });
+  });
+}
+
+const posts = postRecords.map(({ title, category }) => ({ title, category }));
+
+function setGroupOpen(groupName, open) {
+  const state = groupElements.get(groupName);
+  if (!state) return;
+  const { group, toggle, items, inner } = state;
+  group.classList.toggle('is-open', open);
+  toggle.setAttribute('aria-expanded', String(open));
+  items.setAttribute('aria-hidden', String(!open));
+  const arrow = toggle.querySelector('.post-group__arrow');
+  if (arrow) arrow.textContent = open ? '▾' : '▸';
+  const height = open ? `${inner.scrollHeight}px` : '0px';
+  items.style.setProperty('--group-height', height);
+  items.style.maxHeight = height;
+}
+
+function setCategoryFilter(filter) {
+  categoryFilter?.querySelectorAll('.category-filter__item').forEach(button => {
+    const active = button.dataset.filter === filter;
+    button.classList.toggle('is-active', active);
+    button.setAttribute('aria-pressed', String(active));
+  });
+  if (filter === 'all') {
+    // 全部：隐藏分组标题，所有文章按时间倒序平铺成一条时间线。
+    groupElements.forEach(({ group }) => {
+      group.hidden = true;
+    });
+    postRecords
+      .slice()
+      .sort((a, b) => b.date.localeCompare(a.date))
+      .forEach(({ card }) => postList.append(card));
+    return;
+  }
+  // 具体分类：所有卡片回到各自分组，只显示并展开选中的组。
+  groupElements.forEach(({ inner }, groupName) => {
+    postRecords
+      .filter(record => record.group === groupName)
+      .sort((a, b) => b.date.localeCompare(a.date))
+      .forEach(({ card }) => inner.append(card));
+  });
+  groupElements.forEach(({ group }, groupName) => {
+    const visible = groupName === filter;
+    group.hidden = !visible;
+    setGroupOpen(groupName, visible);
+  });
+}
+
+// 初始状态：默认打开"全部"，全部文章按时间排序直接展示。
+setCategoryFilter('all');
+categoryFilter?.querySelectorAll('.category-filter__item').forEach(button => {
+  button.addEventListener('click', () => setCategoryFilter(button.dataset.filter));
+});
+
+window.addEventListener('resize', () => {
+  groupElements.forEach(({ group, items, inner }) => {
+    if (!group.classList.contains('is-open')) return;
+    const height = `${inner.scrollHeight}px`;
+    items.style.setProperty('--group-height', height);
+    items.style.maxHeight = height;
+  });
 });
 function closeSearch() { searchOverlay.classList.remove('open'); searchOverlay.setAttribute('aria-hidden', 'true'); body.classList.remove('no-scroll'); }
 function openSearch() { searchOverlay.classList.add('open'); searchOverlay.setAttribute('aria-hidden', 'false'); body.classList.add('no-scroll'); setTimeout(() => searchInput.focus(), 120); }
@@ -328,6 +521,11 @@ document.querySelectorAll('.expand-toggle').forEach(toggle => {
     toggle.setAttribute('aria-expanded', String(!expanded));
     extra.hidden = expanded;
     toggle.innerHTML = expanded ? '展开 <span>↓</span>' : '收起 <span>↑</span>';
+    const group = toggle.closest('.post-group');
+    const groupName = group?.dataset.group;
+    if (groupName && group.classList.contains('is-open')) {
+      requestAnimationFrame(() => setGroupOpen(groupName, true));
+    }
   });
 });
 
@@ -736,3 +934,54 @@ if (hunterAbout && hunterTrigger && hunterCard) {
   hunterHover.addEventListener('change', closeHunterCard);
   fitHunterCard();
 }
+
+/* =========================================================================
+   GitHub 插件：一言语录 + 灯箱 + 贡献日历（全部可优雅降级）
+   ========================================================================= */
+
+// 一言语录：每天打开页面随机一句，网络失败保留原文。
+(function initHitokoto() {
+  const quoteCard = document.querySelector('.quote-card');
+  const quoteText = quoteCard && quoteCard.querySelector('p');
+  const quoteAuthor = quoteCard && quoteCard.querySelector('.quote-author');
+  if (!quoteText) return;
+  fetch('https://v1.hitokoto.cn/?c=d&c=i&c=k&c=l&encode=json')
+    .then(response => (response.ok ? response.json() : Promise.reject(new Error('HTTP ' + response.status))))
+    .then(data => {
+      if (data && typeof data.hitokoto === 'string' && data.hitokoto.length <= 60) {
+        quoteText.textContent = data.hitokoto;
+        if (quoteAuthor) quoteAuthor.textContent = '— ' + (data.from || '一言');
+      }
+    })
+    .catch(() => { /* 保留原文 */ });
+})();
+
+// GLightbox：目前用于头像大图；以后任何 <a class="glightbox" href="图片"> 自动生效。
+if (window.GLightbox) {
+  window.GLightbox({ selector: '.glightbox', openEffect: 'fade', closeEffect: 'fade' });
+}
+
+// GitHub 贡献日历：allorigins 代理拉取，8 秒内没画出 SVG 就提示失败。
+(function initGitHubCalendar() {
+  const calendarBox = document.querySelector('#github-calendar');
+  if (!calendarBox) return;
+  if (typeof window.GitHubCalendar !== 'function') {
+    calendarBox.textContent = '贡献日历暂时加载不出来，刷新试试。';
+    return;
+  }
+  try {
+    window.GitHubCalendar('#github-calendar', 'lychee199star', {
+      responsive: true,
+      global_stats: true,
+      summary_text: '在 GitHub 搬砖的日子',
+      proxy: username => 'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://github.com/users/' + username + '/contributions')
+    });
+  } catch (error) {
+    calendarBox.textContent = '贡献日历暂时加载不出来，刷新试试。';
+  }
+  window.setTimeout(() => {
+    if (!calendarBox.querySelector('svg')) {
+      calendarBox.textContent = '贡献日历暂时加载不出来，刷新试试。';
+    }
+  }, 8000);
+})();

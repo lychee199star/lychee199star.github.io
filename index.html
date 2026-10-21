@@ -6,7 +6,11 @@
     <meta name="description" content="lychee 的个人博客，记录技术、生活与灵感。" />
     <meta name="theme-color" content="#f6f3ee" />
     <title>定南の 碎碎念</title>
-    <link rel="stylesheet" href="styles.css" />
+    <!-- 插件资源：霞鹜文楷（开源手写体）+ GLightbox 灯箱 + GitHub 贡献日历 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@callmebill/lxgw-wenkai-web@latest/style.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox@3.3.1/dist/css/glightbox.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-calendar@latest/dist/github-calendar-responsive.css" />
+    <link rel="stylesheet" href="styles.css?v=20261025" />
   </head>
   <body class="blog-page">
     <div class="catcar-transition" id="catcar-transition" aria-hidden="true">
@@ -17,7 +21,6 @@
     </div>
     <div class="reading-progress" aria-hidden="true"><span></span></div>
 
-    <canvas id="music-waves" aria-hidden="true"></canvas>
 
     <header class="site-header" id="top">
       <div class="hero-art" aria-hidden="true">
@@ -70,7 +73,14 @@
             </section>
           </div>
           <a class="tilt" href="friends.html">友链</a>
-          <button class="translation-toggle tilt notranslate" type="button" data-language-toggle translate="no" lang="zh-CN" title="机翻仅供参喵" aria-label="切换为英文" aria-pressed="false">译/EN</button>
+          <label class="language-picker notranslate" translate="no">
+            <span class="sr-only">页面语言</span>
+            <select class="translation-select notranslate" data-language-select aria-label="选择页面语言" title="机翻仅供参喵">
+              <option value="zh">中文</option>
+              <option value="en">English</option>
+              <option value="ru">Русский</option>
+            </select>
+          </label>
         </div>
         <div class="nav-actions">
           <button class="icon-button" id="theme-toggle" type="button" aria-label="切换主题">◐</button>
@@ -129,16 +139,17 @@
 
     <main>
       <section class="layout-section" id="posts">
+        <div class="lower-pulse" aria-hidden="true"></div>
         <div class="main-column">
           <div class="section-heading">
             <div>
               <p class="eyebrow">LATEST NOTES</p>
               <h2>最近写下的</h2>
             </div>
-            <span class="section-count">09 / 记录</span>
+            <span class="section-count">12 / 记录</span>
           </div>
 
-          <nav class="category-filter notranslate" aria-label="文章分类目录">
+          <nav class="category-filter" aria-label="文章分类目录">
             <button class="category-filter__item is-active" type="button" data-filter="all" aria-pressed="true">全部</button>
             <span class="category-filter__separator" aria-hidden="true">|</span>
             <button class="category-filter__item" type="button" data-filter="生活" aria-pressed="false">生活</button>
@@ -150,10 +161,63 @@
 
           <div class="latest-articles-heading">
             <p class="eyebrow">LATEST ARTICLES</p>
-            <h3 class="notranslate">最新文章</h3>
+            <h3>最新文章</h3>
           </div>
 
           <div class="post-list">
+            <article class="post-card tilt" id="article-school" data-category="学校生活" data-date="2026-10-21">
+              <div class="post-cover cover-terracotta has-photo">
+                <img class="cover-image" src="assets/post-photo-8.jpg" alt="学校生活的照片" loading="lazy" decoding="async" />
+                <span class="cover-kicker">CAMPUS DIARY 01</span>
+                <span class="cover-title">来qlu的<br />第一个月</span>
+                <span class="cover-shape shape-sun"></span>
+                <span class="cover-shape shape-moon"></span>
+              </div>
+              <div class="post-body">
+                <div class="post-meta"><span>2026.10.21</span><span>学校生活</span><span>6 分钟阅读</span></div>
+                <h3>来qlu正式学习一个月，是时候该总结下了...</h3>
+                <div class="expandable-post" id="school-post-copy">
+                  <p>神秘不连放括号大学😭</p>
+                  <div class="post-extra" hidden>
+                    <p>啊其实我之前锐评了蛮多来着结果因为卸载qq清空消息全没了找不到了......那就先不评了罢（目移）不啥...不啥...总之先记录一点心路历程吧！</p>
+                    <p>刚来的时候，感觉学校真的好大！军训期间更是苦不堪言，日均步数两万五来了。到底在来回跑什么......</p>
+                    <p>哎还有不是说军训期间训练强度大会瘦的吗，为什么我还胖了三斤（怒）何以为！</p>
+                    <p>哦哦哦最重要的一点！学校的亲亲小鸟和猫咪好多！好可爱www又幸福了lychee嘿嘿。但没有说虫子不多的意思（严肃脸）正如歇比所言，八只蟑螂十六蜥蜴！（）在我身上留下点点咬痕和大包（总感觉这么形容怪怪的）的神秘生物我是不会放过你们的👁️👁️👁️👁️</p>
+                    <p>再就是，上课了吧qaq我的妈呀信计专业排课真的吓哭了，满课真的是认真的吗😭到底在干嘛。。。数院你赢了🥲从学长学姐那边分享时了解到，真的只有我们院排课如此犀利哎。。。呃啊，数分高代解析几何，还有下学期的线代，什么叫我们的线代有88+88学时，根本没有这样的排课，，你只是怕了，，这谁不怕，，记一下哪位老师来着开会还是上课时说的话：“你们都来数院了总不能讨厌数学吧哈哈。”😭一开始以为学的是高数还在群里问高数难不难，结果是更难的高代😇孩子们这一点都不好笑，，，</p>
+                    <p>关于各个职位社团面试时候的事，，哎哎我真的好容易紧张加结巴哎，明明在熟人面前还很容易变e来着？以及早知道不在简历上填热情大方了，面试时学长一句怎么感觉和简历上不太符合我大概永远都不会忘记了）哎哎还有得到一个教训我以后一定要好好填写简历！！不是我自我介绍没一个人听全在蛐蛐是干嘛！</p>
+                    <p>以及捞我帮我的学姐学长们我喜欢你们😭😭😭这真的，遇到一些很好的人，真的让我确信并相信世界上还是有善意存在的，我以后一定会成为向你们那样优秀善良的人的！！！！！！</p>
+                    <p>啊，还有最重要的一点，不是，为什么骑车不看路的人这么多啊！！？？？我加上军训期间短短两个月已经被创了六次了！</p>
+                  </div>
+                  <button class="expand-toggle" type="button" aria-expanded="false" aria-controls="school-post-copy">展开 <span>↓</span></button>
+                </div>
+                <a class="read-more" href="#article-school">继续阅读 <span>↗</span></a>
+              </div>
+            </article>
+
+            <article class="post-card post-card--reverse tilt" id="article-re4" data-category="游戏" data-date="2026-08-14">
+              <div class="post-cover cover-olive has-photo">
+                <img class="cover-image" src="assets/post-photo-10.jpg" alt="生化危机4的游戏画面" loading="lazy" decoding="async" />
+                <span class="cover-kicker">GAME JOURNAL 01</span>
+                <span class="cover-title">我应该早接触<br />生化系列</span>
+                <span class="cover-shape shape-block"></span>
+                <span class="cover-shape shape-dot"></span>
+              </div>
+              <div class="post-body">
+                <div class="post-meta"><span>2026.08.14</span><span>游戏</span><span>6 分钟阅读</span></div>
+                <h3>RE：4！我必须狠狠品尝这个！</h3>
+                <div class="expandable-post" id="re4-copy">
+                  <p>呃呃总之先预警一些发电。。。321开始吟唱</p>
+                  <div class="post-extra" hidden>
+                    <p>被里昂帅进坑……历程belike：我去不习惯用手柄！我去这村民怎么还没杀完！我去哪来的b夹子！我去给自己炸掉到桥底下了，，，我去这鱼叉怎么只按鼠标右键松了就会飞出去，一叉不漏的成就到底怎么拿…我去救的大狗狗是狼🥰我去懂事梨挡刀这么方便（）我去村长别在房子里飞了行不…我去瞎子吓哭了😢我去什么叫提着个灯就散步来了😰我去双瞎子更吓哭了😭不我的路易斯—😇拉蒙搞笑来的🥰艾达艾达🥰😱再生者是什么东西啊啊啊突然冒出来😅被碍事梨锤死了🧐怎么这里也有抛瓦人😠怎么又和碍事梨分开了🥰艾达艾达🥰😦怎么没了？→急头白脸二周目全收集我去超时了→恼怒三周目补成就搜索攻略刷钱倒卖哇哈哈换火箭筒开爽😋目前是绝赞严肃开专家模式无伤准备拷打自己一番中……总之这款游戏大力推荐！看颜无脑入！想要操作无脑入！里昂也无脑入！（）</p>
+                    <p>二编：哎哎我说这生4是真好玩吧...现在我已经能一周目无伤专家模式了！骄傲！但是开着火箭筒到处乱炸好爽啊。。。买了艾达dlc准备绝赞品鉴中！</p>
+                    <p>以下是碎碎念：当时是过年的时候先在b站看小卷云玩了一遍，然后发誓等买了电脑一定要自己买了再过一次🥹果然在自己手里玩不是一个东西😅以及最不会理财之人来了，折扣五十多买了本体，通关后意犹未尽又想玩艾达，欸我超原来我没买dlc啊😇捆绑包折扣后也才六十是什么鬼……现在再单买dlc也要五十。。。steampy这么好的东西我居然才知道，，看来还是小黑盒逛的少了（确信）</p>
+                  </div>
+                  <button class="expand-toggle" type="button" aria-expanded="false" aria-controls="re4-copy">展开 <span>↓</span></button>
+                </div>
+                <a class="read-more" href="#article-re4">继续阅读 <span>↗</span></a>
+              </div>
+            </article>
+
             <article class="post-card post-card--featured tilt" id="article" data-category="学习" data-date="2026-10-08">
               <div class="post-cover cover-indigo has-photo">
                 <img class="cover-image" src="assets/post-photo-1.jpg" alt="呆猫手捧玫瑰的照片" loading="lazy" decoding="async" />
@@ -208,6 +272,40 @@
                   <button class="expand-toggle" type="button" aria-expanded="false" aria-controls="weekend-post-copy">展开 <span>↓</span></button>
                 </div>
                 <a class="read-more" href="#article">继续阅读 <span>↗</span></a>
+              </div>
+            </article>
+
+            <article class="post-card post-card--reverse tilt" id="article-dsh" data-category="吐槽" data-date="2026-09-20">
+              <div class="post-cover cover-blue has-photo">
+                <img class="cover-image" src="assets/post-photo-9.jpg" alt="穿蓝色猫斗篷的猫" loading="lazy" decoding="async" />
+                <span class="cover-kicker">TECH RANT 01</span>
+                <span class="cover-title">DSH的<br />五宗罪</span>
+                <span class="cover-shape shape-book"></span>
+                <span class="cover-shape shape-line"></span>
+              </div>
+              <div class="post-body">
+                <div class="post-meta"><span>2026.09.20</span><span>吐槽</span><span>5 分钟阅读</span></div>
+                <h3>DSH给我气红温了…求Agent应用推荐</h3>
+                <div class="expandable-post" id="dsh-rant-copy">
+                  <p>接下来我将对使用dsh遇到的问题进行一个小吐槽。</p>
+                  <div class="post-extra" hidden>
+                    <p>1.雷霆大思考，任何一段思考链都充斥着重复的“let me think let me run”等冗余内容。</p>
+                    <p>2.雷霆大调用，任何一个简单的任务都要调用几十次工具，把对话框塞的满满当当</p>
+                    <p>3.雷霆大脚本，很多问我一句或者用现有工具就能解决的问题他一定要写出一个脚本来解决，毫无意义的进行代码堆砌</p>
+                    <p>4.雷霆大石山，每一轮对话他基本都会发现之前的代码中的各种隐患漏洞，然后重写出一坨。纵然我基本没有编程基础我也能看出来不对，，，</p>
+                    <p>5.雷霆吃白饭，仅仅是把之前的对话进行一次总结交由GPT生成Plan，耗时十多分钟不说还烧掉好几块钱…</p>
+                    <p>我不清楚这是deepseek模型的问题还是DeepSeek Harness的问题，不论如何，我觉得是该换个agent应用了，但到了这一步该选择谁？我又犯了难....</p>
+                    <p>1.Codex+ChatGPT plus，但是这140一个月的订阅费让我望而却步，而且我不觉得我这种idea驱动的临时起意型使用者能够充分利用这140元()</p>
+                    <p>2.Claude Code，a/的逆天操作我早有耳闻，而我没法保证我的ip清洁度 。。</p>
+                    <p>3.DeepSeek Harness网页端，但是从桌面端换成网页端似乎是治标不治本？</p>
+                    <p>4.用回Zcode，在爆雷之后或许能有所收敛？只能寄希望于他们的良心了</p>
+                    <p>5.pi，Hermes等。我对这些不太了解，而且他们的大众度似乎（如果说错了原谅我的坐井观天）不如其他几种选择，如果真出了问题只怕是连攻略都找不到。而且在看了一些所谓的测评视频后，我对他们的性能也有所怀疑了呃呃</p>
+                    <p>6.Codex+DeepSeek，这看起来是最优解了。但是我以后有可能会使用ChatGPT，到时候这些基于DeepSeek的agents恐怕要全部清除了。如今它写出的代码已经需要轮轮修复了，我都不敢想到时候的交接会引发多么严重的沼气爆炸……</p>
+                    <p>许愿型代码是这样的，没有编程基础就只能自己找bug用自然语言提意见一个一个改。。。没有系统学习就只能花更多的钱去跑去尽力地蹬。。。测试完bug再一个一个修。。。。</p>
+                  </div>
+                  <button class="expand-toggle" type="button" aria-expanded="false" aria-controls="dsh-rant-copy">展开 <span>↓</span></button>
+                </div>
+                <a class="read-more" href="#article-dsh">继续阅读 <span>↗</span></a>
               </div>
             </article>
 
@@ -318,7 +416,7 @@
 
         <aside class="sidebar" id="about">
           <div class="profile-card tilt">
-            <a class="profile-avatar" href="assets/avatar.jpg" target="_blank" rel="noopener noreferrer" aria-label="查看头像原图">
+            <a class="profile-avatar glightbox" href="assets/avatar.jpg" target="_blank" rel="noopener noreferrer" aria-label="查看头像原图">
               <img src="assets/avatar.jpg" alt="lychee 的头像" />
             </a>
             <div class="cat-stamp"><span>ฅ</span> 呆猫出没中</div>
@@ -339,7 +437,7 @@
             </div>
             <div class="cat-status" id="cat-status" aria-live="polite">
               <h3>今日呆猫状态 <span id="cat-face" class="cat-face notranslate" aria-label="今日颜文字"></span></h3>
-              <p id="cat-status-text" class="notranslate"></p>
+              <p id="cat-status-text"></p>
             </div>
           </div>
 
@@ -354,6 +452,11 @@
             <span class="quote-mark">“</span>
             <p>你不用很厉害才开始，你要开始了才会……发现自己确实不厉害，但至少开始了不是吗。</p>
             <span class="quote-author">— lychee</span>
+          </div>
+
+          <div class="side-block">
+            <div class="side-heading"><span>GITHUB</span><span>足迹</span></div>
+            <div class="github-calendar-box" id="github-calendar">贡献日历加载中…</div>
           </div>
 
           <div class="sticker-card tilt">
@@ -465,13 +568,82 @@
     <!-- 公共播放器：所有页面共用，负责跨页面接力播放。必须在 script.js 之前加载。 -->
     <script src="music-player.js"></script>
     <script src="catcar-transition.js"></script>
-    <script src="music-waves.js"></script>
-    <script src="script.js"></script>
+    <script src="assets/lib/wavesurfer.min.js"></script>
+    <script src="music-waves.js?v=20261022"></script>
+    <!-- 插件脚本：灯箱与贡献日历须在 script.js 之前加载，供其初始化 -->
+    <script src="https://cdn.jsdelivr.net/npm/glightbox@3.3.1/dist/js/glightbox.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/github-calendar@latest/dist/github-calendar.min.js"></script>
+    <script src="script.js?v=20261023"></script>
     <script src="tilt.js"></script>
     <script src="guestbook.js"></script>
-    <!-- translate.js 3.18.66；CDN: https://cdn.staticfile.net/translate.js/3.18.66/translate.js -->
-    <script id="translate-cdn" src="https://cdn.staticfile.net/translate.js/3.18.66/translate.js" async onerror="this.dataset.failed='true'"></script>
-    <script src="translation.js"></script>
+    <!-- 固定 translate.js 3.18.66；defer 保证翻译引擎先于本站控制脚本执行。 -->
+    <script id="translate-cdn" src="https://cdn.staticfile.net/translate.js/3.18.66/translate.js" defer onerror="this.dataset.failed='true'"></script>
+    <script src="translation.js" defer></script>
+    <!-- 呆猫 Live2D 桌宠：模型取自本地 DaiMeow（assets/live2d/daimeow），渲染库本地化，完全离线可用 -->
+    <script src="assets/live2d/lib/oh-my-live2d.min.js"></script>
+    <script>
+      if (window.OML2D) {
+        // oh-my-live2d 0.19.3 配置：idleTips 定时随机播报，welcomeTips 按时段问候
+        window.__daimeow = window.OML2D.loadOml2d({
+          models: [{ path: 'assets/live2d/daimeow/daimeow.model3.json' }],
+          mobileDisplay: false,
+          transitionTime: 1000,
+          statusBar: { restMessage: '看板猫休息中' },
+          menus: {
+            items: [
+              { id: 'Rest', icon: 'icon-rest', title: '休息', onClick: function (i) { var t; i.statusBarOpen((t = i.options.statusBar) == null ? void 0 : t.restMessage), i.clearTips(), i.setStatusBarClickEvent(function () { i.statusBarClose(), i.stageSlideIn(), i.statusBarClearEvents(); }), i.stageSlideOut(); } },
+              { id: 'SwitchModelClothes', icon: 'icon-skin', title: '切换衣服', onClick: function (i) { i.loadNextModelClothes(); } },
+              { id: 'SwitchModel', icon: 'icon-switch', title: '切换模型', onClick: function (i) { i.loadNextModel(); } }
+            ]
+          },
+          tips: {
+            idleTips: {
+              message: [
+                '别戳了喵，再戳就收费了喵！',
+                '本喵在呢，找本喵干嘛喵？',
+                '鼠标别晃啦，本喵眼都要转花了喵！',
+                '听歌吗？这里放的音乐还不错的喵。',
+                '老大，今天也要加油喵！'
+              ],
+              duration: 4000,
+              interval: 15000
+            },
+            welcomeTips: {
+              message: {
+                daybreak: '早啊老大！新的一天也要元气满满喵！',
+                morning: '上午好喵！本喵刚巡逻完村子喵。',
+                noon: '中午啦，老大记得吃饭喵！',
+                afternoon: '下午好喵，困了就摸摸本喵提神喵！',
+                dusk: '天快黑了，老大今天过得怎么样喵？',
+                night: '老大来啦喵！这么晚还在刷博客，早点睡喵！',
+                lateNight: '夜深了喵，老大还醒着的话，本喵也陪着喵。',
+                weeHours: '还不睡喵？本喵陪你一起熬夜喵……'
+              },
+              duration: 6000
+            }
+          }
+        });
+        // 点击呆猫弹随机台词：库本体没有点击气泡，用实例的 tipsMessage 实现
+        document.addEventListener('click', function (event) {
+          const stage = document.querySelector('#oml2d-stage');
+          const instance = window.__daimeow;
+          if (!stage || !instance) return;
+          const rect = stage.getBoundingClientRect();
+          const hitX = event.clientX >= rect.left && event.clientX <= rect.right;
+          const hitY = event.clientY >= rect.top - 60 && event.clientY <= rect.bottom;
+          if (hitX && hitY) {
+            const lines = [
+              '别戳了喵，再戳就收费了喵！',
+              '本喵在呢，找本喵干嘛喵？',
+              '鼠标别晃啦，本喵眼都要转花了喵！',
+              '听歌吗？这里放的音乐还不错的喵。',
+              '老大，今天也要加油喵！'
+            ];
+            instance.tipsMessage(lines[Math.floor(Math.random() * lines.length)], 3500, 3);
+          }
+        });
+      }
+    </script>
   </body>
 </html>
 
