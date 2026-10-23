@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#183c37" />
+    <meta name="description" content="定南の 碎碎念的作品陈列室：想不到吧，这里还空空的喵。" />
+    <title>作品 · 定南の 碎碎念</title>
+    <link rel="stylesheet" href="styles.css?v=20261025" />
+    <link rel="stylesheet" href="friends.css" />
+    <link rel="stylesheet" href="works.css" />
+  </head>
+  <body class="blog-page works-page">
+    <div class="catcar-transition" id="catcar-transition" aria-hidden="true">
+      <div class="catcar-transition__inner" role="status" aria-live="polite">
+        <p class="catcar-transition__message" id="catcar-transition-message"></p>
+        <div class="catcar-transition__dots" aria-hidden="true"><i></i><i></i><i></i></div>
+      </div>
+    </div>
+    <header class="friends-header">
+      <nav class="friends-nav" aria-label="主导航">
+        <a class="friends-brand" href="index.html">🐾 定南の 碎碎念</a>
+        <div class="friends-nav-links">
+          <a class="tilt" href="index.html">首页</a>
+          <a class="tilt" href="index.html#posts">文章</a>
+          <a class="tilt" href="index.html#about">关于我</a>
+          <a class="tilt" href="friends.html">友链</a>
+          <a class="tilt" href="works.html" aria-current="page">作品</a>
+          <label class="language-picker notranslate" translate="no">
+            <span class="sr-only">页面语言</span>
+            <select class="translation-select notranslate" data-language-select aria-label="选择页面语言" title="机翻仅供参喵">
+              <option value="zh">中文</option>
+              <option value="en">English</option>
+              <option value="ru">Русский</option>
+            </select>
+          </label>
+        </div>
+      </nav>
+    </header>
+    <main class="works-main">
+      <section class="works-stage" aria-label="呆猫动图">
+        <span class="works-kicker">MY WORKS / COMING SOON</span>
+        <img class="works-animation" src="assets/works-animation.gif" alt="呆猫的动图" decoding="async" />
+      </section>
+      <section class="works-note" aria-label="呆猫的作品宣言">
+        <h2>作品陈列室（空）</h2>
+        <p>想不到吧老大，这个页面现在还是空空的喵！本喵也想给老大端上几个像样的作品，可村长大人还在上学，作品还没攒出来喵……不过老大放心，本喵已经在加紧学习技术了喵，前端、画画、各种瞎折腾一样都不会落下！等学成归来，这里一定摆满作品，老大记得常回来验收喵！</p>
+      </section>
+    </main>
+    <footer class="friends-footer"><span>© 2026 lychee · 作品陈列室</span><a href="index.html">回村首页 ↑</a></footer>
+
+    <!-- 猫村留声机：与首页共用 music-player.js，从任何页面跳过来都接着上一首继续播。 -->
+    <section class="music-player music-player--mini music-player--wood" id="music-player" aria-label="猫村留声机">
+      <div class="music-player__header">
+        <div class="music-player__eyebrow">♫ PALICO GRAMOPHONE</div>
+        <button class="music-player__collapse" id="music-collapse" type="button" aria-label="收起音乐播放器" aria-expanded="true">−</button>
+      </div>
+      <div class="music-player__body">
+        <div class="music-player__now-playing">
+          <span class="music-player__disc" aria-hidden="true">♫</span>
+          <div>
+            <span class="music-player__label">正在播放</span>
+            <strong id="music-title">英雄の証</strong>
+            <span class="music-player__status" id="music-status" role="status">准备播放</span>
+          </div>
+        </div>
+        <div class="music-player__controls" aria-label="播放控制">
+          <button class="music-control" id="music-prev" type="button" aria-label="上一首">↶</button>
+          <button class="music-control music-control--main" id="music-play" type="button" aria-label="播放">▶</button>
+          <button class="music-control" id="music-next" type="button" aria-label="下一首">↷</button>
+          <button class="music-control music-control--external" id="music-external" type="button" aria-label="在外部播放器打开当前歌曲" title="外接播放器">↗</button>
+        </div>
+        <div class="music-player__progress">
+          <input class="music-player__slider music-player__seek" id="music-seek" type="range" min="0" max="1000" step="1" value="0" aria-label="播放进度" aria-valuetext="0:00 / 0:00" />
+          <div class="music-player__time"><span id="music-current">0:00</span><span id="music-duration">0:00</span></div>
+        </div>
+        <label class="music-player__volume">
+          <span>音量</span>
+          <input class="music-player__slider" id="music-volume" type="range" min="0" max="100" step="1" value="100" aria-label="音量" />
+        </label>
+      </div>
+      <audio id="music-audio" preload="metadata"></audio>
+    </section>
+
+    <canvas id="click-particles" aria-hidden="true"></canvas>
+    <script src="click-particles.js"></script>
+    <!-- 公共播放器：与首页同一份代码，负责接着上一页的歌和进度继续播。 -->
+    <script src="music-player.js"></script>
+    <script src="catcar-transition.js"></script>
+    <script src="assets/lib/wavesurfer.min.js"></script>
+    <script src="music-waves.js?v=20261022"></script>
+    <script src="tilt.js"></script>
+    <!-- 固定 translate.js 3.18.66；defer 保证翻译引擎先于本站控制脚本执行。 -->
+    <script id="translate-cdn" src="https://cdn.staticfile.net/translate.js/3.18.66/translate.js" defer onerror="this.dataset.failed='true'"></script>
+    <script src="translation.js" defer></script>
+    <!-- 呆猫 Live2D 桌宠：与首页同一只呆猫，模型与渲染库均本地化 -->
+    <script src="assets/live2d/lib/oh-my-live2d.min.js"></script>
+    <script>
+      if (window.OML2D) {
+        window.__daimeow = window.OML2D.loadOml2d({
+          models: [{ path: 'assets/live2d/daimeow/daimeow.model3.json' }],
+          mobileDisplay: false,
+          transitionTime: 1000,
+          statusBar: { restMessage: '看板猫休息中' },
+          menus: {
+            items: [
+              { id: 'Rest', icon: 'icon-rest', title: '休息', onClick: function (i) { var t; i.statusBarOpen((t = i.options.statusBar) == null ? void 0 : t.restMessage), i.clearTips(), i.setStatusBarClickEvent(function () { i.statusBarClose(), i.stageSlideIn(), i.statusBarClearEvents(); }), i.stageSlideOut(); } },
+              { id: 'SwitchModelClothes', icon: 'icon-skin', title: '切换衣服', onClick: function (i) { i.loadNextModelClothes(); } },
+              { id: 'SwitchModel', icon: 'icon-switch', title: '切换模型', onClick: function (i) { i.loadNextModel(); } }
+            ]
+          },
+          tips: {
+            idleTips: {
+              message: [
+                '别戳了喵，再戳就收费了喵！',
+                '本喵在呢，找本喵干嘛喵？',
+                '鼠标别晃啦，本喵眼都要转花了喵！',
+                '听歌吗？这里放的音乐还不错的喵。',
+                '老大，今天也要加油喵！'
+              ],
+              duration: 4000,
+              interval: 15000
+            },
+            welcomeTips: {
+              message: {
+                daybreak: '早啊老大！新的一天也要元气满满喵！',
+                morning: '上午好喵！本喵刚巡逻完村子喵。',
+                noon: '中午啦，老大记得吃饭喵！',
+                afternoon: '下午好喵，困了就摸摸本喵提神喵！',
+                dusk: '天快黑了，老大今天过得怎么样喵？',
+                night: '老大来啦喵！这么晚还在刷博客，早点睡喵！',
+                lateNight: '夜深了喵，老大还醒着的话，本喵也陪着喵。',
+                weeHours: '还不睡喵？本喵陪你一起熬夜喵……'
+              },
+              duration: 6000
+            }
+          }
+        });
+        document.addEventListener('click', function (event) {
+          const stage = document.querySelector('#oml2d-stage');
+          const instance = window.__daimeow;
+          if (!stage || !instance) return;
+          const rect = stage.getBoundingClientRect();
+          const hitX = event.clientX >= rect.left && event.clientX <= rect.right;
+          const hitY = event.clientY >= rect.top - 60 && event.clientY <= rect.bottom;
+          if (hitX && hitY) {
+            const lines = [
+              '别戳了喵，再戳就收费了喵！',
+              '本喵在呢，找本喵干嘛喵？',
+              '鼠标别晃啦，本喵眼都要转花了喵！',
+              '听歌吗？这里放的音乐还不错的喵。',
+              '老大，今天也要加油喵！'
+            ];
+            instance.tipsMessage(lines[Math.floor(Math.random() * lines.length)], 3500, 3);
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

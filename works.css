@@ -1,0 +1,78 @@
+/* 作品页：动图展示 + 呆猫小作文。背景图为平铺墙纸 + 半透明遮罩。 */
+.works-page {
+  background-color: #e8f2fb;
+  background-image: url('assets/works-bg.jpg');
+  background-repeat: repeat;
+  background-size: 226px 221px;
+}
+.works-page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: rgba(232, 242, 251, 0.86);
+}
+.works-page .friends-header,
+.works-page .friends-footer,
+.works-page .works-main { position: relative; z-index: 1; }
+
+.works-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  max-width: 760px;
+  margin: 70px auto 100px;
+  padding: 0 24px;
+}
+.works-stage { text-align: center; }
+.works-kicker {
+  display: block;
+  margin-bottom: 18px;
+  color: #4d82bb;
+  font: 11px 'DM Mono', monospace;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.works-animation {
+  display: block;
+  width: min(200px, 70vw);
+  margin: 0 auto;
+  border: 6px solid #fff;
+  border-radius: 24px;
+  box-shadow: 0 26px 60px rgba(36, 71, 107, 0.3);
+}
+.works-note {
+  position: relative;
+  width: 100%;
+  padding: 34px 36px 30px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(77, 130, 187, 0.28);
+  border-radius: 20px;
+  box-shadow: 0 18px 44px rgba(36, 71, 107, 0.14);
+  color: #24476b;
+  font: 17px/2.1 'LXGW WenKai', 'KaiTi', 'STKaiti', serif;
+}
+.works-note h2 {
+  margin: 0 0 14px;
+  color: #285b91;
+  font-size: 24px;
+}
+.works-note p { margin: 0; }
+.works-note::before {
+  content: '🐾';
+  position: absolute;
+  top: -16px;
+  left: 26px;
+  font-size: 22px;
+  transform: rotate(-8deg);
+}
+body.dark.works-page { background-color: #1d2221; }
+body.dark.works-page::before { background: rgba(29, 34, 33, 0.84); }
+body.dark .works-note {
+  background: rgba(35, 56, 77, 0.92);
+  border-color: rgba(185, 215, 242, 0.28);
+  color: #dbeaf7;
+}
+body.dark .works-note h2 { color: #b9d7f2; }
