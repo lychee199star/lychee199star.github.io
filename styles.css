@@ -851,28 +851,6 @@ body.dark { --paper: #1d2221; --paper-deep: #2c3431; --ink: #f2eee8; --muted: #a
 }
 
 
-/* =========================================================================
-   下方主页背景脉冲：浅蓝透明光晕随呼吸节奏缩放明暗，覆盖在轮换背景图上。
-   ========================================================================= */
-.lower-pulse {
-  position: absolute;
-  inset: -12%;
-  z-index: -1;
-  pointer-events: none;
-  background:
-    radial-gradient(circle at 28% 22%, rgba(111, 214, 255, 0.20), transparent 55%),
-    radial-gradient(circle at 74% 68%, rgba(62, 142, 247, 0.16), transparent 60%),
-    radial-gradient(circle at 50% 50%, rgba(191, 240, 255, 0.10), transparent 70%);
-  animation: lower-pulse 6s ease-in-out infinite;
-}
-@keyframes lower-pulse {
-  0%, 100% { opacity: 0.35; transform: scale(1); }
-  50% { opacity: 0.95; transform: scale(1.06); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .lower-pulse { animation: none; opacity: 0.55; }
-}
-
 
 /* =========================================================================
    顶部菜单滑动下划线：一条横线随悬停/键盘聚焦在菜单项之间平滑滑动，
