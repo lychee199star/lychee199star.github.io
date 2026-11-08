@@ -1,0 +1,1189 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#f6f3ee" />
+<title>呆猫计时 · PALICO TIMER</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@callmebill/lxgw-wenkai-web@latest/style.css" />
+<style>
+/* ============================================================
+   PALICO TIMER / 奶油纸手账 × 怪物猎人崛起 和风任务板
+   参考 https://lychee199star.github.io/ 的色彩与排版体系
+   ============================================================ */
+:root{
+  --paper:#f6f3ee; --paper-deep:#ebe6de; --ink:#262623; --muted:#817d76;
+  --line:rgba(38,38,35,.14); --accent:#4d82bb; --accent-deep:#285b91;
+  --blue-ice:#b9d7f2; --gold:#ead28c; --vermilion:#c8453b; --navy:#243b52;
+  --shadow:0 20px 50px rgba(54,43,33,.08);
+}
+body[data-theme="light"]{
+  --bg:var(--paper); --card:rgba(255,255,255,.62); --card-solid:#fffdf8;
+  --fg:var(--ink); --sub:var(--muted); --bd:var(--line);
+  --deep-card:#242c2b; --deep-fg:#f6f1e8;
+}
+body[data-theme="dark"]{
+  --bg:#202a2a; --card:rgba(255,255,255,.055); --card-solid:#2b3635;
+  --fg:#eaf4ff; --sub:#a9c0c8; --bd:rgba(185,215,242,.18);
+  --deep-card:#16232f; --deep-fg:#eaf4ff;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--fg);
+  font-family:'LXGW WenKai','Manrope','Noto Sans SC',sans-serif;line-height:1.65;
+  transition:background .35s ease,color .35s ease;overflow-x:hidden}
+button,input,select{font:inherit}
+button{border:0;cursor:pointer;color:inherit}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--blue-ice);color:var(--navy)}
+.eyebrow{margin:0;font:11px/1.4 'DM Mono',ui-monospace,monospace;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--accent)}
+.mono{font-family:'DM Mono',ui-monospace,monospace}
+
+/* 背景层：网格 + 光晕 + 樱花 */
+.bg-layer{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.bg-grid{position:absolute;inset:0;opacity:.42;
+  background-image:linear-gradient(var(--bd) 1px,transparent 1px),linear-gradient(90deg,var(--bd) 1px,transparent 1px);
+  background-size:86px 86px;mask-image:linear-gradient(180deg,transparent,#000 22%,#000 70%,transparent)}
+.bg-glow{position:absolute;width:46vw;height:46vw;right:-10vw;top:-14vw;border-radius:50%;
+  background:radial-gradient(circle,rgba(185,215,242,.34),transparent 68%)}
+.bg-glow.two{width:36vw;height:36vw;left:-14vw;bottom:-18vw;top:auto;
+  background:radial-gradient(circle,rgba(234,210,140,.2),transparent 68%)}
+.petal{position:absolute;top:-30px;width:11px;height:11px;border-radius:80% 10% 80% 10%;
+  background:rgba(244,186,186,.72);animation:petal-fall linear infinite}
+@keyframes petal-fall{
+  0%{transform:translate3d(0,-30px,0) rotate(0deg);opacity:0}
+  8%{opacity:.85}
+  100%{transform:translate3d(70px,105vh,0) rotate(560deg);opacity:0}}
+
+/* 顶栏 */
+.topbar{position:relative;z-index:3;display:flex;align-items:center;gap:20px;
+  max-width:1240px;margin:0 auto;padding:26px 32px 10px}
+.brand{display:flex;align-items:center;gap:11px;font-size:15px;font-weight:700;letter-spacing:.03em}
+.brand-mark{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;
+  border:1px solid var(--fg);font:14px 'DM Mono',monospace;background:var(--card-solid)}
+.brand small{display:block;font:9px 'DM Mono',monospace;letter-spacing:.16em;color:var(--sub);font-weight:400}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.topbar-note{font:10px 'DM Mono',monospace;letter-spacing:.16em;color:var(--sub)}
+.icon-btn{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;
+  border:1px solid var(--bd);background:var(--card);font-size:15px;transition:.2s ease}
+.icon-btn:hover{transform:translateY(-2px);border-color:var(--accent);color:var(--accent-deep)}
+
+/* 主布局 */
+.stage{position:relative;z-index:2;display:grid;gap:26px;max-width:1240px;margin:0 auto;
+  padding:18px 32px 30px;grid-template-columns:minmax(0,1.16fr) minmax(320px,.84fr);align-items:stretch}
+.card{position:relative;background:var(--card);border:1px solid var(--bd);border-radius:22px;
+  box-shadow:var(--shadow);backdrop-filter:blur(10px);overflow:hidden}
+.card::after{content:'';position:absolute;inset:7px;border:1px solid var(--bd);border-radius:16px;
+  pointer-events:none;opacity:.5}
+.board{padding:34px 38px 30px}
+.card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+.rare{padding:3px 10px;border:1px solid var(--bd);border-radius:999px;
+  font:10px 'DM Mono',monospace;letter-spacing:.1em;color:var(--sub);white-space:nowrap}
+.board h1{margin:10px 0 4px;font-size:clamp(26px,3vw,36px);font-weight:700;letter-spacing:-.05em;line-height:1.3}
+.board-sub{margin:0;color:var(--sub);font-size:12.5px}
+.stamp{position:absolute;right:26px;top:96px;width:58px;height:58px;display:grid;place-items:center;
+  border:3px double var(--vermilion);color:var(--vermilion);border-radius:8px;
+  font-size:27px;font-weight:700;transform:rotate(-13deg);opacity:.75;
+  pointer-events:none;letter-spacing:-.08em}
+
+/* 模式切换 */
+.mode-tabs{display:inline-flex;gap:4px;margin:24px 0 20px;padding:4px;border:1px solid var(--bd);
+  border-radius:999px;background:var(--card-solid)}
+.mode-tab{padding:7px 18px;border-radius:999px;background:transparent;font-size:12.5px;transition:.2s ease}
+.mode-tab .en{display:block;font:9px 'DM Mono',monospace;letter-spacing:.14em;opacity:.65}
+.mode-tab.active{background:var(--accent-deep);color:#fff;box-shadow:0 6px 16px rgba(40,91,145,.28)}
+
+/* 计时表盘 */
+.clock-wrap{position:relative;width:min(300px,72%);aspect-ratio:1;margin:2px auto 22px;display:grid;place-items:center}
+.ring{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.ring-track{fill:none;stroke:var(--bd);stroke-width:7}
+.ring-fill{fill:none;stroke:var(--accent);stroke-width:7;stroke-linecap:round;
+  stroke-dasharray:666.02;stroke-dashoffset:0;transition:stroke-dashoffset .18s linear,stroke .3s ease}
+.ring-fill.done{stroke:var(--gold)}
+.ring-inner{fill:none;stroke:var(--bd);stroke-width:1;stroke-dasharray:2 7}
+.clock-face{position:relative;text-align:center;z-index:1}
+.clock-label{font:9px 'DM Mono',monospace;letter-spacing:.22em;color:var(--sub);text-transform:uppercase}
+.digits{display:flex;align-items:baseline;justify-content:center;gap:1px;margin:4px 0 2px;
+  font:700 clamp(30px,4.2vw,46px)/1.1 'DM Mono',ui-monospace,monospace;letter-spacing:-.05em;
+  font-variant-numeric:tabular-nums}
+.digits i{font-style:normal;opacity:.4;margin:0 1px}
+.digits small{font-size:13px;font-weight:400;color:var(--sub);margin-left:5px;letter-spacing:0}
+.clock-sub{margin-top:8px;font-size:11.5px;color:var(--sub)}
+.ring-pct{position:absolute;bottom:12%;font:9px 'DM Mono',monospace;letter-spacing:.14em;color:var(--sub)}
+.board.is-urgent .ring-fill{stroke:var(--vermilion)}
+.board.is-urgent .digits{color:var(--vermilion);animation:pulse .9s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.55}}
+
+/* 时分秒设定器 */
+.setters{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:430px;margin:0 auto 16px}
+.setter{padding:12px 10px 10px;border:1px solid var(--bd);border-radius:14px;background:var(--card-solid);text-align:center}
+.setter label{display:block;font:9px 'DM Mono',monospace;letter-spacing:.16em;color:var(--sub);text-transform:uppercase}
+.setter-row{display:flex;align-items:center;justify-content:space-between;gap:4px;margin-top:4px}
+.setter-row button{width:27px;height:27px;border-radius:8px;background:transparent;color:var(--sub);
+  font-size:16px;line-height:1;transition:.18s ease}
+.setter-row button:hover{background:var(--blue-ice);color:var(--navy)}
+.setter-row input{width:100%;min-width:0;padding:0;border:0;outline:0;background:transparent;text-align:center;
+  color:var(--fg);font:700 28px/1.2 'DM Mono',monospace;font-variant-numeric:tabular-nums}
+.setter-row input:disabled{opacity:.55}
+.setters.locked{opacity:.55}
+.setters.locked .setter-row button{pointer-events:none}
+.setter-hint{text-align:center;font:10px 'DM Mono',monospace;letter-spacing:.08em;color:var(--sub);margin:0 0 18px}
+
+/* 预设 & 控制 */
+.presets{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:22px}
+.chip{padding:6px 13px;border:1px solid var(--bd);border-radius:999px;background:transparent;
+  font:11px 'DM Mono',monospace;letter-spacing:.03em;transition:.2s ease}
+.chip:hover{border-color:var(--accent);color:var(--accent-deep);transform:translateY(-2px)}
+.chip.active{background:var(--blue-ice);border-color:var(--blue-ice);color:var(--navy)}
+.controls{display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap}
+.btn-primary{display:inline-flex;align-items:center;gap:10px;padding:13px 30px;border-radius:12px;
+  background:var(--vermilion);color:#fff8f2;font-size:15px;font-weight:700;letter-spacing:.03em;
+  box-shadow:0 10px 22px rgba(200,69,59,.26);transition:.22s ease}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 14px 26px rgba(200,69,59,.34)}
+.btn-primary.running{background:var(--accent-deep);box-shadow:0 10px 22px rgba(40,91,145,.26)}
+.btn-primary .ico{font-size:14px}
+.btn-ghost{padding:12px 18px;border:1px solid var(--bd);border-radius:12px;background:var(--card-solid);
+  font-size:12.5px;transition:.2s ease}
+.btn-ghost:hover{transform:translateY(-2px);border-color:var(--accent);color:var(--accent-deep)}
+
+/* 呆猫状态条 */
+.status{display:flex;align-items:center;gap:11px;margin-top:24px;padding:14px 16px;border-radius:14px;
+  background:var(--deep-card);color:var(--deep-fg)}
+.status .dot{flex:0 0 9px;width:9px;height:9px;border-radius:50%;background:var(--blue-ice);
+  box-shadow:0 0 0 4px rgba(185,215,242,.18);animation:breathe 2.4s ease-in-out infinite}
+@keyframes breathe{50%{opacity:.45;transform:scale(.82)}}
+.status p{margin:0;font-size:13px;flex:1;min-width:0}
+.status .keys{font:9px 'DM Mono',monospace;letter-spacing:.06em;color:var(--blue-ice);opacity:.75;white-space:nowrap}
+@media(max-width:1100px){.status .keys{display:none}}
+
+/* 右栏：呆猫舞台 */
+.cat-card{padding:30px 30px 26px;display:flex;flex-direction:column}
+.cat-stage{position:relative;flex:1;min-height:360px;margin-top:16px;border-radius:18px;
+  border:1px dashed var(--bd);overflow:hidden;
+  background:radial-gradient(circle at 50% 42%,rgba(185,215,242,.32),transparent 58%),
+             repeating-linear-gradient(45deg,transparent 0 14px,rgba(77,130,187,.035) 14px 15px)}
+.crest{position:absolute;top:16%;left:50%;width:190px;height:190px;transform:translateX(-50%);
+  border:1px solid var(--bd);border-radius:50%;display:grid;place-items:center;
+  font-size:98px;color:var(--accent);opacity:.1;font-weight:700}
+.crest::after{content:'';position:absolute;inset:18px;border:1px dashed var(--bd);border-radius:50%}
+.cat-stage .paw{position:absolute;font-size:17px;opacity:.28;transform:rotate(-18deg)}
+.cat-stage .paw.p1{left:12%;top:18%}.cat-stage .paw.p2{right:14%;top:30%;transform:rotate(22deg)}
+.cat-stage .paw.p3{left:16%;bottom:22%;transform:rotate(12deg)}.cat-stage .paw.p4{right:12%;bottom:14%}
+.placeholder{position:absolute;inset:0;display:grid;place-items:center;z-index:2;transition:opacity .4s ease}
+.placeholder.hidden{opacity:0;pointer-events:none}
+.cat-svg-wrap{display:grid;justify-items:center;gap:6px;transform:translateY(6px)}
+.cat-svg{width:min(215px,64%);height:auto;animation:cat-float 4.2s ease-in-out infinite;filter:drop-shadow(0 14px 18px rgba(36,43,42,.16))}
+@keyframes cat-float{50%{transform:translateY(-9px) rotate(1deg)}}
+.cat-svg .eye{transform-box:fill-box;transform-origin:center;animation:cat-blink 5s infinite}
+@keyframes cat-blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.08)}}
+.cat-svg .tail{transform-box:fill-box;transform-origin:left center;animation:tail-wag 3.2s ease-in-out infinite}
+@keyframes tail-wag{50%{transform:rotate(-9deg)}}
+.placeholder .cap{font:10px 'DM Mono',monospace;letter-spacing:.14em;color:var(--sub)}
+.mon-note{position:absolute;left:0;right:0;bottom:14px;text-align:center;font-size:11.5px;color:var(--sub);z-index:3}
+.cat-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.cat-tags span{padding:4px 10px;border:1px solid var(--bd);border-radius:6px;
+  font:10px 'DM Mono',monospace;color:var(--sub)}
+.cat-hint{margin:14px 0 0;font-size:11px;line-height:1.8;color:var(--sub);word-break:break-all}
+.cat-hint code{padding:1px 5px;border-radius:4px;background:var(--card-solid);font:10px 'DM Mono',monospace}
+
+/* 页脚 */
+.footer{position:relative;z-index:2;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  max-width:1240px;margin:0 auto;padding:12px 32px 34px;color:var(--sub);
+  font:10px 'DM Mono',monospace;letter-spacing:.06em}
+
+/* 设置抽屉 */
+.drawer-mask{position:fixed;inset:0;z-index:60;background:rgba(20,30,34,.42);opacity:0;visibility:hidden;
+  transition:.25s ease}
+.drawer-mask.open{opacity:1;visibility:visible}
+.drawer{position:fixed;top:0;right:0;bottom:0;z-index:61;width:min(370px,92vw);padding:26px 26px 30px;
+  background:var(--card-solid);border-left:1px solid var(--bd);box-shadow:-20px 0 60px rgba(20,30,34,.18);
+  transform:translateX(102%);transition:transform .3s cubic-bezier(.22,.8,.3,1);overflow:auto}
+.drawer.open{transform:none}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+.drawer h2{margin:4px 0 0;font-size:22px;letter-spacing:-.04em}
+.drawer label{display:block;margin:20px 0 7px;font:10px 'DM Mono',monospace;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--sub)}
+.drawer input[type=text],.drawer input[type=number],.drawer select{width:100%;padding:11px 12px;border:1px solid var(--bd);border-radius:10px;
+  background:var(--bg);color:var(--fg);font:12px 'DM Mono',monospace;outline:0}
+.drawer input[type=text]:focus,.drawer input[type=number]:focus,.drawer select:focus{border-color:var(--accent)}
+.drawer .row{display:flex;gap:8px;margin-top:10px}
+.drawer .row button{flex:1;padding:10px;border-radius:10px;font-size:12px;transition:.2s ease}
+.btn-solid{background:var(--accent-deep);color:#fff}
+.btn-solid:hover{filter:brightness(1.12)}
+.btn-soft{background:var(--card);border:1px solid var(--bd)}
+.btn-soft:hover{border-color:var(--accent)}
+.switch-row{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:13px 0;border-bottom:1px solid var(--bd);font-size:13px}
+.switch-row input{accent-color:var(--accent-deep);width:17px;height:17px}
+.diag-out{margin:10px 0 0;padding:12px;border:1px solid var(--bd);border-radius:10px;
+  background:var(--bg);color:var(--fg);font:10px/1.8 'DM Mono',monospace;
+  white-space:pre-wrap;word-break:break-all;max-height:230px;overflow:auto}
+.diag-out[hidden]{display:none}
+.drawer-note{margin-top:22px;padding:14px;border-radius:12px;background:var(--card);
+  border:1px solid var(--bd);font-size:11.5px;line-height:1.9;color:var(--sub)}
+.drawer-note b{color:var(--fg)}
+.drawer-note code{display:block;margin-top:6px;padding:7px 9px;border-radius:6px;background:var(--bg);
+  font:10px 'DM Mono',monospace;word-break:break-all}
+
+/* 结束弹窗 */
+.clear-mask{position:fixed;inset:0;z-index:70;display:grid;place-items:center;padding:20px;
+  background:rgba(20,30,34,.5);backdrop-filter:blur(5px)}
+.clear-mask[hidden]{display:none}
+.clear-card{position:relative;width:min(420px,100%);padding:38px 36px 32px;text-align:center;
+  background:var(--card-solid);border:1px solid var(--bd);border-radius:22px;
+  box-shadow:0 30px 80px rgba(20,30,34,.3);animation:pop .35s cubic-bezier(.2,1.3,.4,1)}
+@keyframes pop{from{transform:scale(.88) translateY(14px);opacity:0}to{transform:none;opacity:1}}
+.clear-stamp{position:absolute;right:22px;top:20px;width:52px;height:52px;display:grid;place-items:center;
+  border:3px double var(--vermilion);color:var(--vermilion);border-radius:8px;font-size:24px;
+  font-weight:700;transform:rotate(-14deg)}
+.clear-card h2{margin:10px 0 8px;font-size:30px;letter-spacing:-.05em}
+.clear-card p{margin:0;color:var(--sub);font-size:13px;line-height:1.9}
+.clear-card strong{color:var(--fg);font-family:'DM Mono',monospace}
+.clear-paws{margin:18px 0 22px;font-size:20px;letter-spacing:.5em;opacity:.6}
+.clear-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+
+/* Toast */
+.toast{position:fixed;left:50%;bottom:28px;z-index:80;transform:translate(-50%,16px);
+  padding:10px 20px;border-radius:999px;background:var(--navy);color:#eaf4ff;font-size:12.5px;
+  opacity:0;pointer-events:none;transition:.25s ease;box-shadow:0 12px 30px rgba(20,30,34,.25)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* Live2D 舞台覆盖：库默认把猫停靠在页面左下角，这里搬进右侧舞台卡片 */
+#oml2d-stage{z-index:36 !important}
+#oml2d-stage #oml2d-tips{top:auto !important;bottom:calc(100% + 16px) !important}
+#live2d-widget{z-index:36 !important}
+/* 未入位前先隐形，避免加载瞬间在左下角闪一下 */
+#oml2d-stage:not(.docked),#live2d-widget:not(.docked){opacity:0}
+.cat-stage > #oml2d-stage,.cat-stage > #live2d-widget{
+  position:absolute !important;left:50% !important;right:auto !important;
+  top:auto !important;bottom:0 !important;margin:0 !important;
+  width:min(100%,360px) !important;height:min(100%,480px) !important;
+  transform:translateX(-50%) !important;opacity:1 !important;z-index:4 !important;
+}
+/* 库自带的左侧状态条 / 菜单条不要，本站有自己的呆猫状态条 */
+#oml2d-statusBar,[id^="oml2d-"]:not(#oml2d-stage):not(#oml2d-canvas):not(#oml2d-tips){display:none !important}
+/* 库自带气泡在空内容时会留下一块浅蓝底色，直接关掉，改用本站自定义气泡 */
+.cat-stage #oml2d-tips,#oml2d-tips{display:none !important}
+.cat-bubble{position:absolute;z-index:6;top:7%;left:50%;transform:translateX(-50%);
+  width:max-content;max-width:82%;padding:10px 16px;border-radius:14px;
+  background:var(--card-solid);border:1px solid var(--accent);color:var(--fg);
+  font-size:12.5px;line-height:1.7;text-align:center;
+  box-shadow:0 10px 26px rgba(54,43,33,.14);animation:bubble-in .25s ease}
+.cat-bubble::after{content:'';position:absolute;left:50%;bottom:-7px;width:11px;height:11px;
+  transform:translateX(-50%) rotate(45deg);background:var(--card-solid);
+  border-right:1px solid var(--accent);border-bottom:1px solid var(--accent)}
+.cat-bubble[hidden]{display:none !important}
+@keyframes bubble-in{from{opacity:0;transform:translateX(-50%) translateY(7px)}to{opacity:1;transform:translateX(-50%)}}
+body[data-live2d="hidden"] #oml2d-stage,
+body[data-live2d="hidden"] #live2d-widget{display:none !important}
+
+@media(max-width:960px){
+  .stage{grid-template-columns:1fr;padding:16px 20px 26px}
+  .topbar{padding:20px 20px 8px}
+  .footer{padding:12px 20px 30px}
+  .board{padding:28px 24px 26px}
+  .cat-stage{min-height:250px}
+  .crest{width:150px;height:150px;font-size:76px}
+  .cat-svg{width:150px}
+  #oml2d-stage,#live2d-widget{display:none !important}
+}
+@media(max-width:520px){
+  .topbar-note{display:none}
+  .board h1{font-size:25px}
+  .stamp{width:46px;height:46px;font-size:21px;right:16px;top:88px}
+  .clock-wrap{width:min(260px,84%)}
+  .setters{gap:7px}
+  .setter{padding:10px 5px}
+  .setter-row input{font-size:22px}
+  .btn-primary{padding:12px 22px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none !important;transition:none !important}
+}
+</style>
+</head>
+<body data-theme="light">
+
+<div class="bg-layer" aria-hidden="true">
+  <div class="bg-grid"></div><div class="bg-glow"></div><div class="bg-glow two"></div>
+  <div id="petals"></div>
+</div>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark">猫</span>
+    <span>呆猫计时<small>PALICO TIMER / MH RISE</small></span>
+  </div>
+  <div class="topbar-right">
+    <span class="topbar-note">VISUAL DIARY / 2026</span>
+    <button class="icon-btn" id="btn-theme" title="切换明暗主题 (◐)" aria-label="切换明暗主题">◐</button>
+    <button class="icon-btn" id="btn-settings" title="模型设置" aria-label="打开模型设置">⚙</button>
+  </div>
+</header>
+
+<main class="stage">
+  <!-- 左：任务板 -->
+  <section class="card board" id="board">
+    <div class="card-head">
+      <div>
+        <p class="eyebrow">QUEST BOARD / 集会所☆1</p>
+        <h1>猫饭还没好？先定个时间喵</h1>
+        <p class="board-sub">受注任务 · 随行艾露猫全程看火候，猫车概不负责。</p>
+      </div>
+      <span class="rare">Rare 10</span>
+    </div>
+    <div class="stamp" aria-hidden="true">済</div>
+
+    <div class="mode-tabs" role="tablist" aria-label="计时模式">
+      <button class="mode-tab active" data-mode="countdown" role="tab" aria-selected="true">倒计时<span class="en">COUNTDOWN</span></button>
+      <button class="mode-tab" data-mode="stopwatch" role="tab" aria-selected="false">正计时<span class="en">STOPWATCH</span></button>
+    </div>
+
+    <div class="clock-wrap">
+      <svg class="ring" viewBox="0 0 240 240" aria-hidden="true">
+        <circle class="ring-track" cx="120" cy="120" r="106"></circle>
+        <circle class="ring-inner" cx="120" cy="120" r="90"></circle>
+        <circle class="ring-fill" id="ring-fill" cx="120" cy="120" r="106"></circle>
+      </svg>
+      <div class="clock-face">
+        <div class="clock-label" id="clock-label">REMAINING / 剩余</div>
+        <div class="digits" id="digits" aria-live="off">
+          <span id="d-h">00</span><i>:</i><span id="d-m">00</span><i>:</i><span id="d-s">00</span><small id="d-c">.00</small>
+        </div>
+        <div class="clock-sub" id="clock-sub">设定一个时间，出发喵</div>
+      </div>
+      <span class="ring-pct" id="ring-pct">100%</span>
+    </div>
+
+    <div class="setters" id="setters">
+      <div class="setter" data-unit="h">
+        <label>HOURS / 时</label>
+        <div class="setter-row"><button data-step="-1" aria-label="减一小时">−</button><input id="in-h" type="text" inputmode="numeric" maxlength="2" value="00" aria-label="小时"><button data-step="1" aria-label="加一小时">+</button></div>
+      </div>
+      <div class="setter" data-unit="m">
+        <label>MINUTES / 分</label>
+        <div class="setter-row"><button data-step="-1" aria-label="减一分钟">−</button><input id="in-m" type="text" inputmode="numeric" maxlength="2" value="25" aria-label="分钟"><button data-step="1" aria-label="加一分钟">+</button></div>
+      </div>
+      <div class="setter" data-unit="s">
+        <label>SECONDS / 秒</label>
+        <div class="setter-row"><button data-step="-1" aria-label="减一秒">−</button><input id="in-s" type="text" inputmode="numeric" maxlength="2" value="00" aria-label="秒"><button data-step="1" aria-label="加一秒">+</button></div>
+      </div>
+    </div>
+    <p class="setter-hint">滚轮 / ↑↓ 微调 · 运行中锁定</p>
+
+    <div class="presets" id="presets">
+      <button class="chip" data-sec="300">🍅 05:00</button>
+      <button class="chip" data-sec="900">🍖 15:00</button>
+      <button class="chip active" data-sec="1500">☕ 25:00</button>
+      <button class="chip" data-sec="2700">📖 45:00</button>
+      <button class="chip" data-sec="3600">🌙 01:00:00</button>
+    </div>
+
+    <div class="controls">
+      <button class="btn-primary" id="btn-main"><span class="ico" id="btn-ico">▶</span><span id="btn-text">开始计时</span></button>
+      <button class="btn-ghost" id="btn-reset">↺ 重置</button>
+      <button class="btn-ghost" id="btn-plus">+01:00</button>
+    </div>
+
+    <div class="status">
+      <span class="dot" id="status-dot"></span>
+      <p id="palico-line">任务板还空着喵，先定个时间吧！</p>
+      <span class="keys">SPACE 开始/暂停 · R 重置 · 1/2 模式 · M 静音</span>
+    </div>
+  </section>
+
+  <!-- 右：呆猫舞台 -->
+  <aside class="card cat-card">
+    <div class="card-head">
+      <div>
+        <p class="eyebrow">PALICO LOG / 今日呆猫状态</p>
+        <h2 style="margin:8px 0 0;font-size:22px;letter-spacing:-.04em">常驻看家的艾露猫</h2>
+      </div>
+      <span class="rare">ฅ 出没中</span>
+    </div>
+
+    <div class="cat-stage" id="cat-stage">
+      <div class="crest" aria-hidden="true">猫</div>
+      <span class="paw p1" aria-hidden="true">🐾</span><span class="paw p2" aria-hidden="true">🐾</span>
+      <span class="paw p3" aria-hidden="true">🐾</span><span class="paw p4" aria-hidden="true">🐾</span>
+      <div class="cat-bubble" id="cat-bubble" hidden></div>
+
+      <!-- 模型未加载时的 SVG 替身呆猫 -->
+      <div class="placeholder" id="placeholder">
+        <div class="cat-svg-wrap">
+          <svg class="cat-svg" viewBox="0 0 300 340" role="img" aria-label="Q 版呆猫替身">
+            <defs>
+              <linearGradient id="fur" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#fffdf7"/><stop offset="1" stop-color="#e9e4d8"/>
+              </linearGradient>
+              <linearGradient id="cloth" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#6f9fd0"/><stop offset="1" stop-color="#285b91"/>
+              </linearGradient>
+            </defs>
+            <!-- 尾巴 -->
+            <path class="tail" d="M228 262 C272 258 276 218 258 198" fill="none" stroke="#3a3a38"
+              stroke-width="17" stroke-linecap="round"/>
+            <path class="tail" d="M228 262 C272 258 276 218 258 198" fill="none" stroke="url(#fur)"
+              stroke-width="12" stroke-linecap="round"/>
+            <!-- 身体 -->
+            <path d="M150 176 C96 176 78 226 78 278 C78 308 108 322 150 322 C192 322 222 308 222 278 C222 226 204 176 150 176Z"
+              fill="url(#fur)" stroke="#3a3a38" stroke-width="3"/>
+            <!-- 斗篷 -->
+            <path d="M150 182 C112 182 92 208 86 246 C118 262 182 262 214 246 C208 208 188 182 150 182Z"
+              fill="url(#cloth)" stroke="#22456e" stroke-width="3"/>
+            <path d="M150 182 C138 190 132 202 130 216 C140 222 160 222 170 216 C168 202 162 190 150 182Z" fill="#f3e7c8"/>
+            <!-- 前爪 -->
+            <ellipse cx="112" cy="306" rx="25" ry="14" fill="url(#fur)" stroke="#3a3a38" stroke-width="3"/>
+            <ellipse cx="188" cy="306" rx="25" ry="14" fill="url(#fur)" stroke="#3a3a38" stroke-width="3"/>
+            <path d="M105 303v6M113 302v7M121 303v6M181 303v6M189 302v7M197 303v6" stroke="#b9b2a3" stroke-width="2" stroke-linecap="round"/>
+            <!-- 耳朵 -->
+            <path d="M74 96 L62 32 L118 68 Z" fill="url(#fur)" stroke="#3a3a38" stroke-width="3" stroke-linejoin="round"/>
+            <path d="M226 96 L238 32 L182 68 Z" fill="url(#fur)" stroke="#3a3a38" stroke-width="3" stroke-linejoin="round"/>
+            <path d="M79 84 L72 48 L106 70 Z" fill="#f4c3c3" opacity=".85"/>
+            <path d="M221 84 L228 48 L194 70 Z" fill="#f4c3c3" opacity=".85"/>
+            <!-- 头 -->
+            <circle cx="150" cy="132" r="82" fill="url(#fur)" stroke="#3a3a38" stroke-width="3.5"/>
+            <!-- 额头花纹 -->
+            <path d="M132 66 q8 12 18 2 q10 10 18 -2" fill="none" stroke="#cdbfa4" stroke-width="5" stroke-linecap="round"/>
+            <!-- 头巾 -->
+            <path d="M68 104 C82 66 118 52 150 52 C182 52 218 66 232 104 C214 92 186 86 150 86 C114 86 86 92 68 104Z"
+              fill="url(#cloth)" stroke="#22456e" stroke-width="3"/>
+            <path d="M70 103 C88 91 116 85 150 85 C184 85 212 91 230 103" fill="none" stroke="#ead28c" stroke-width="3" opacity=".9"/>
+            <!-- 铃铛 -->
+            <circle cx="150" cy="108" r="13" fill="#ead28c" stroke="#a9822f" stroke-width="2.5"/>
+            <path d="M139 106h22M150 108v9" stroke="#a9822f" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- 眼睛 -->
+            <g class="eye"><ellipse cx="116" cy="139" rx="10" ry="15" fill="#2f3a3a"/><circle cx="120" cy="133" r="3.5" fill="#fff"/></g>
+            <g class="eye"><ellipse cx="184" cy="139" rx="10" ry="15" fill="#2f3a3a"/><circle cx="188" cy="133" r="3.5" fill="#fff"/></g>
+            <!-- 腮红 -->
+            <ellipse cx="98" cy="163" rx="13" ry="7" fill="#f6bcbc" opacity=".55"/>
+            <ellipse cx="202" cy="163" rx="13" ry="7" fill="#f6bcbc" opacity=".55"/>
+            <!-- 鼻嘴 -->
+            <path d="M144 157 L156 157 L150 164 Z" fill="#d98d8d"/>
+            <path d="M150 164 v5 M150 169 q-9 9 -17 1 M150 169 q9 9 17 1" fill="none" stroke="#3a3a38" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- 胡须 -->
+            <path d="M92 158 L64 152 M92 168 L62 170 M208 158 L236 152 M208 168 L238 170" stroke="#3a3a38" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- 猫饭碗 -->
+            <ellipse cx="150" cy="292" rx="30" ry="8" fill="#c8453b" stroke="#8e3029" stroke-width="2"/>
+            <path d="M120 292 q30 26 60 0" fill="#e45c4f" stroke="#8e3029" stroke-width="2"/>
+          </svg>
+          <span class="cap">替身艾露猫 / OFFLINE PALICO</span>
+        </div>
+      </div>
+      <div class="mon-note" id="mon-note">正在呼唤呆猫…</div>
+    </div>
+
+    <div class="cat-tags"><span>#专注</span><span>#猫饭</span><span>#猫车率99%</span><span>#摸鱼有罪</span></div>
+    <p class="cat-hint" id="model-status">当前模型：演示呆猫（来自参考站）。点右上角 ⚙ 换成你自己的模型喵。</p>
+  </aside>
+</main>
+
+<footer class="footer">
+  <span>© 2026 PALICO TIMER · MADE WITH CURIOSITY &amp; CATNIP</span>
+  <span>模型放置：<code style="font:inherit">models/palico/palico.model3.json</code> · 本地需起 http 服务</span>
+</footer>
+
+<!-- 设置抽屉 -->
+<div class="drawer-mask" id="drawer-mask"></div>
+<aside class="drawer" id="drawer" aria-label="模型设置">
+  <div class="drawer-head">
+    <div><p class="eyebrow">PALICO SETTINGS</p><h2>随行艾露猫设置</h2></div>
+    <button class="icon-btn" id="btn-drawer-close" aria-label="关闭">×</button>
+  </div>
+
+  <label for="in-model">模型配置路径 / MODEL3.JSON</label>
+  <input id="in-model" type="text" spellcheck="false" placeholder="./models/palico/palico.model3.json" />
+  <div class="row">
+    <button class="btn-solid" id="btn-load">加载模型</button>
+    <button class="btn-soft" id="btn-demo">演示模型</button>
+  </div>
+  <div class="row" style="margin-top:8px">
+    <button class="btn-soft" id="btn-diag">🔍 诊断模型 · 看失败原因</button>
+  </div>
+  <pre class="diag-out" id="diag-out" hidden></pre>
+
+  <label for="in-sdk">渲染库 / SDK</label>
+  <select id="in-sdk">
+    <option value="oml2d">oh-my-live2d 0.19.3 (Cubism 4, 推荐)</option>
+    <option value="widget">live2d-widget 3.1.4 (Cubism 2)</option>
+  </select>
+
+  <div class="row" style="margin-top:18px">
+    <div style="flex:1;min-width:0">
+      <label for="in-scale" style="margin-top:0">模型缩放 / SCALE</label>
+      <input id="in-scale" type="number" min="0.02" max="0.8" step="0.01" value="0.18" />
+    </div>
+    <div style="flex:1;min-width:0">
+      <label for="in-y" style="margin-top:0">上下偏移 / Y</label>
+      <input id="in-y" type="number" min="-300" max="300" step="10" value="60" />
+    </div>
+  </div>
+  <p style="margin:8px 0 0;font-size:11px;color:var(--sub)">换上自己的模型后觉得太大 / 太小 / 太靠上，调这两个值再点「加载模型」喵。</p>
+
+  <div style="margin-top:18px">
+    <div class="switch-row"><span>显示 Live2D 呆猫</span><input type="checkbox" id="sw-cat" checked /></div>
+    <div class="switch-row"><span>提示音 / 任务达成铃</span><input type="checkbox" id="sw-sound" checked /></div>
+  </div>
+
+  <div class="drawer-note">
+    <b>模型怎么放喵？</b><br />
+    Cubism 4：把整个模型文件夹放到 <code>models/palico/</code>，保持 <code>palico.model3.json</code>、<code>.moc3</code>、贴图、<code>motions/</code> 的相对结构不变，然后把路径填进上面。<br />
+    Cubism 2：填 <code>model.json</code> 路径并把 SDK 切到 live2d-widget。<br />
+    浏览器直接双击打开时本地 json 会被 CORS 拦，请在本目录起个静态服务：
+    <code>python -m http.server 8080</code>
+    然后访问 <code>http://localhost:8080</code>。加载失败时会自动启用 SVG 替身猫，计时功能不受影响喵。<br />
+    <b>注意：</b>内置预览面板是带 CSP 的沙箱，会拦外部 <code>fetch</code>（模型 json 取不到），且不会放行工作区里新建的 <code>models/</code> 目录。想验证自己的模型，请用上面的本地服务打开页面喵。
+  </div>
+</aside>
+
+<!-- 任务达成 -->
+<div class="clear-mask" id="clear-mask" hidden>
+  <div class="clear-card" role="dialog" aria-modal="true" aria-labelledby="clear-title">
+    <span class="clear-stamp">済</span>
+    <p class="eyebrow">QUEST CLEAR / 任务达成</p>
+    <h2 id="clear-title">任务达成喵！</h2>
+    <p>老大坚持了 <strong id="clear-duration">00:00:00</strong>，<br />猫车一次都没来，本喵给你端茶喵～</p>
+    <div class="clear-paws">🐾 🐾 🐾</div>
+    <div class="clear-actions">
+      <button class="btn-primary" id="clear-again" style="padding:10px 22px;font-size:13px">↺ 再来一次</button>
+      <button class="btn-ghost" id="clear-close">收下</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   1. 常量与状态
+   ============================================================ */
+var DEMO_MODEL = 'https://lychee199star.github.io/assets/live2d/daimeow/daimeow.model3.json';
+var LOCAL_MODEL = './models/palico/palico.model3.json';
+var LIB_OML2D = 'https://unpkg.com/oh-my-live2d@0.19.3/dist/index.min.js';
+var LIB_OML2D_FALLBACK = 'https://lychee199star.github.io/assets/live2d/lib/oh-my-live2d.min.js';
+var LIB_WIDGET = 'https://unpkg.com/live2d-widget@3.1.4/lib/L2Dwidget.min.js';
+var STORE_KEY = 'palico-timer-v1';
+var RING_C = 2 * Math.PI * 106;
+
+var defaults = {
+  theme:'light', mode:'countdown', h:0, m:25, s:0,
+  muted:false, modelUrl:DEMO_MODEL, sdk:'oml2d', showCat:true,
+  modelScale:0.18, modelY:60
+};
+var cfg = Object.assign({}, defaults, readStore());
+
+// 计时状态：idle / running / paused / done
+var st = { state:'idle', target:0, remaining:0, elapsed:0, anchor:0 };
+var audioCtx = null, live2dReady = false, toastTimer = null, lastTitleKey = '';
+var probeFatal = null, lastLibError = '';
+// 库内部的 Promise 错误（例如 CSP 拦掉 fetch）不会冒泡到 try/catch，单独记下来
+window.addEventListener('unhandledrejection',function(e){
+  try{ lastLibError=(e.reason&&e.reason.message)?String(e.reason.message):String(e.reason||'unknown'); }catch(x){}
+});
+
+/* ============================================================
+   2. DOM 快捷引用
+   ============================================================ */
+function $(id){ return document.getElementById(id); }
+var board=$('board'), line=$('palico-line'), ringFill=$('ring-fill'), ringPct=$('ring-pct');
+var dH=$('d-h'), dM=$('d-m'), dS=$('d-s'), dC=$('d-c');
+var inH=$('in-h'), inM=$('in-m'), inS=$('in-s'), setters=$('setters');
+var btnMain=$('btn-main'), btnText=$('btn-text'), btnIco=$('btn-ico');
+var placeholder=$('placeholder'), monNote=$('mon-note'), modelStatus=$('model-status');
+var catBubble=$('cat-bubble'), bubbleTimer=null;
+
+function readStore(){
+  try { return JSON.parse(localStorage.getItem(STORE_KEY) || '{}'); } catch(e){ return {}; }
+}
+function saveStore(){
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(cfg)); } catch(e){}
+}
+function pad(n){ return String(n).padStart(2,'0'); }
+function clamp(n,min,max){ return Math.min(max,Math.max(min,isNaN(n)?0:n)); }
+function toast(msg){
+  var t=$('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer=setTimeout(function(){ t.classList.remove('show'); },2600);
+}
+
+/* ============================================================
+   3. 呆猫台词：状态条 + Live2D 气泡
+   ============================================================ */
+var LINES = {
+  idle:'任务板还空着喵，先定个时间吧！',
+  start:'任务受注喵！本喵给你看着火候～',
+  stopwatch:'开始记录喵，一秒都不放过！',
+  pause:'暂停一下喵，喝口猫饭茶再继续～',
+  resume:'继续出发喵！还差一点点！',
+  done:'任务达成喵！猫车没来，好耶！',
+  reset:'重置好了喵，再来一局？',
+  add:'加了一分钟喵，猫饭还能再焖一会儿～',
+  empty:'时间还没设喵，先给本喵一个数字！',
+  tap:['喵！轻点戳，本喵怕痒！','别戳了喵，再戳就收费了喵！','老大，今天也要加油喵！','猫饭快好了喵，再等一下下！']
+};
+function say(text, skipBubble){
+  line.textContent = text;
+  if (!skipBubble){
+    catBubble.textContent=text; catBubble.hidden=false;
+    clearTimeout(bubbleTimer);
+    bubbleTimer=setTimeout(function(){ catBubble.hidden=true; },3400);
+  }
+  // 库气泡已隐藏，仍调用一次以兼容自带 idleTips 逻辑；失败也不影响本站台词
+  try {
+    if (window.__cat && typeof window.__cat.tipsMessage === 'function'){
+      window.__cat.tipsMessage(text, 3400, 3);
+    }
+  } catch(e){}
+}
+
+/* ============================================================
+   4. 音效：Web Audio 现场合成，无外部文件
+   ============================================================ */
+function ctx(){
+  if (cfg.muted) return null;
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    return audioCtx;
+  } catch(e){ return null; }
+}
+function tone(freq, at, dur, type, vol){
+  var c=ctx(); if(!c) return;
+  var o=c.createOscillator(), g=c.createGain();
+  o.type=type||'sine'; o.frequency.setValueAtTime(freq,at);
+  g.gain.setValueAtTime(0.0001,at);
+  g.gain.exponentialRampToValueAtTime(vol||.14,at+.02);
+  g.gain.exponentialRampToValueAtTime(0.0001,at+dur);
+  o.connect(g); g.connect(c.destination); o.start(at); o.stop(at+dur+.03);
+}
+function clickSound(){ var c=ctx(); if(c) tone(680,c.currentTime,.09,'triangle',.055); }
+function chime(){
+  var c=ctx(); if(!c) return;
+  [523.25,659.25,783.99,1046.5].forEach(function(f,i){
+    tone(f,c.currentTime+i*.17,1.05,'sine',.13);
+    tone(f*2,c.currentTime+i*.17,.5,'triangle',.035);
+  });
+}
+
+/* ============================================================
+   5. 时间设定器
+   ============================================================ */
+function inputsToCfg(){
+  cfg.h = clamp(parseInt(inH.value,10),0,99);
+  cfg.m = clamp(parseInt(inM.value,10),0,59);
+  cfg.s = clamp(parseInt(inS.value,10),0,59);
+}
+function cfgToInputs(){
+  inH.value=pad(cfg.h); inM.value=pad(cfg.m); inS.value=pad(cfg.s);
+}
+function targetMs(){ return (cfg.h*3600+cfg.m*60+cfg.s)*1000; }
+function setFromMs(ms){
+  var t=Math.max(0,Math.floor(ms/1000));
+  cfg.h=clamp(Math.floor(t/3600),0,99); cfg.m=Math.floor((t%3600)/60); cfg.s=t%60;
+  cfgToInputs();
+}
+function onInputChange(){
+  inputsToCfg(); cfgToInputs();
+  if (st.state==='idle'||st.state==='done'){
+    st.target=targetMs(); st.remaining=st.target; st.elapsed=0; st.state='idle';
+  }
+  syncPresets(); saveStore(); render(); say(LINES.idle,true);
+}
+function step(unit,delta){
+  if (st.state==='running') return;
+  inputsToCfg();
+  var max = unit==='h'?99:59;
+  cfg[unit]=clamp(cfg[unit]+delta,0,max);
+  cfgToInputs(); onInputChange(); clickSound();
+}
+['h','m','s'].forEach(function(u){
+  var box=setters.querySelector('[data-unit="'+u+'"]');
+  box.querySelectorAll('[data-step]').forEach(function(b){
+    b.addEventListener('click',function(){ step(u,parseInt(b.dataset.step,10)); });
+  });
+  var input=$('in-'+u);
+  input.addEventListener('input',function(){
+    input.value=input.value.replace(/[^\d]/g,'').slice(0,2);
+  });
+  input.addEventListener('change',onInputChange);
+  input.addEventListener('blur',onInputChange);
+  input.addEventListener('wheel',function(e){
+    if (input.disabled) return;
+    e.preventDefault(); step(u, e.deltaY<0?1:-1);
+  },{passive:false});
+  input.addEventListener('keydown',function(e){
+    if(e.key==='ArrowUp'){e.preventDefault();step(u,1);}
+    if(e.key==='ArrowDown'){e.preventDefault();step(u,-1);}
+    if(e.key==='Enter'){input.blur();}
+  });
+});
+function syncPresets(){
+  var t=Math.round(targetMs()/1000);
+  document.querySelectorAll('.chip').forEach(function(c){
+    c.classList.toggle('active', parseInt(c.dataset.sec,10)===t);
+  });
+}
+$('presets').addEventListener('click',function(e){
+  var c=e.target.closest('.chip'); if(!c) return;
+  if(st.state==='running'){ toast('先暂停才能换任务喵'); return; }
+  setFromMs(parseInt(c.dataset.sec,10)*1000);
+  st.target=targetMs(); st.remaining=st.target; st.elapsed=0; st.state='idle';
+  syncPresets(); saveStore(); render(); say('接到 '+c.textContent.trim()+' 的任务喵，准备出发！'); clickSound();
+});
+
+/* ============================================================
+   6. 计时核心：基于 performance.now() 锚点，不累加秒数
+   ============================================================ */
+function compute(){
+  if (st.state!=='running') return;
+  var now=performance.now();
+  if (cfg.mode==='countdown') st.remaining=Math.max(0, st.target-(now-st.anchor));
+  else st.elapsed=Math.max(0, now-st.anchor);
+}
+function start(){
+  if (st.state==='done') reset(true);
+  st.target=targetMs();
+  if (cfg.mode==='countdown' && st.target<=0){ say(LINES.empty); toast('先设个时间喵'); return; }
+  if (cfg.mode==='countdown'){
+    if (st.state==='idle') st.remaining=st.target;
+    st.anchor=performance.now()-(st.target-st.remaining);
+  } else {
+    st.anchor=performance.now()-st.elapsed;
+  }
+  st.state='running';
+  // 区分「首次开始」「正计时开始」「暂停后继续」三种口播
+  var resuming = cfg.mode==='countdown' ? (st.remaining<st.target) : (st.elapsed>0);
+  say(resuming ? LINES.resume : (cfg.mode==='stopwatch' ? LINES.stopwatch : LINES.start));
+  clickSound(); render();
+}
+function pause(){ compute(); st.state='paused'; say(LINES.pause); clickSound(); render(); }
+function reset(silent){
+  st.state='idle'; st.target=targetMs(); st.remaining=st.target; st.elapsed=0;
+  if(!silent) say(LINES.reset); render(); saveStore();
+}
+function toggleMain(){
+  if (st.state==='running') pause();
+  else start();
+}
+function addMinute(){
+  var before=targetMs();
+  setFromMs(before+60000);
+  st.target=targetMs();
+  if (st.state==='running' && cfg.mode==='countdown'){
+    compute(); st.remaining+=60000;
+    st.anchor=performance.now()-(st.target-st.remaining);
+  } else if (st.state==='idle'||st.state==='done'){
+    st.state='idle'; st.remaining=st.target;
+  }
+  syncPresets(); saveStore(); render(); say(LINES.add); clickSound();
+}
+function finish(){
+  st.state='done'; st.remaining=0;
+  chime(); say(LINES.done);
+  $('clear-duration').textContent=formatHMS(st.target,false);
+  $('clear-mask').hidden=false;
+  render();
+}
+function formatHMS(ms,withCenti){
+  var total=Math.max(0,Math.ceil(ms/1000));
+  var h=Math.floor(total/3600), m=Math.floor((total%3600)/60), s=total%60;
+  var out=pad(h)+':'+pad(m)+':'+pad(s);
+  if(withCenti){
+    var cc=Math.floor((ms%1000)/10);
+    return {h:pad(h),m:pad(m),s:pad(s),c:pad(cc),full:out};
+  }
+  return out;
+}
+function render(){
+  compute();
+  var ms = cfg.mode==='countdown' ? st.remaining : st.elapsed;
+  var f = formatHMS(ms,true);
+  dH.textContent=f.h; dM.textContent=f.m; dS.textContent=f.s; dC.textContent='.'+f.c;
+
+  var ref = st.target>0 ? st.target : 3600000;
+  var ratio = cfg.mode==='countdown'
+    ? (st.state==='idle' ? 1 : clamp(st.remaining/ref,0,1))
+    : clamp(st.elapsed/ref,0,1);
+  ringFill.style.strokeDashoffset = (RING_C*(1-ratio)).toFixed(2);
+  ringPct.textContent = Math.round(ratio*100)+'%';
+  ringFill.classList.toggle('done', cfg.mode==='stopwatch' && ratio>=1);
+  $('clock-label').textContent = cfg.mode==='countdown' ? 'REMAINING / 剩余' : 'ELAPSED / 已用';
+  $('clock-sub').textContent = cfg.mode==='countdown'
+    ? (st.state==='done'?'任务完成，收下喵':'目标 '+formatHMS(st.target,false))
+    : (ratio>=1?'目标达成，还在继续喵':'目标 '+formatHMS(st.target,false));
+
+  var urgent = cfg.mode==='countdown' && st.state==='running' && st.remaining>0 && st.remaining<=10000;
+  board.classList.toggle('is-urgent',urgent);
+
+  var locked = st.state==='running';
+  setters.classList.toggle('locked',locked);
+  [inH,inM,inS].forEach(function(i){ i.disabled=locked; });
+
+  if (st.state==='running'){ btnText.textContent='暂停计时'; btnIco.textContent='❚❚'; btnMain.classList.add('running'); }
+  else if (st.state==='paused'){ btnText.textContent='继续计时'; btnIco.textContent='▶'; btnMain.classList.remove('running'); }
+  else if (st.state==='done'){ btnText.textContent='再来一次'; btnIco.textContent='↺'; btnMain.classList.remove('running'); }
+  else { btnText.textContent='开始计时'; btnIco.textContent='▶'; btnMain.classList.remove('running'); }
+  // 标题只在秒数或状态变化时写，避免每帧触发浏览器标签重绘
+  var titleKey=st.state+'|'+Math.floor(ms/1000);
+  if (titleKey!==lastTitleKey){
+    lastTitleKey=titleKey;
+    document.title = (st.state==='running'? f.full+' · ':'') + '呆猫计时 · PALICO TIMER';
+  }
+}
+function tick(){
+  compute();
+  if (cfg.mode==='countdown' && st.state==='running' && st.remaining<=0) finish();
+  render();
+  requestAnimationFrame(tick);
+}
+
+/* ============================================================
+   7. 模式 / 主题 / 快捷键 / 按钮
+   ============================================================ */
+function setMode(mode,silent){
+  cfg.mode=mode;
+  document.querySelectorAll('.mode-tab').forEach(function(t){
+    var on=t.dataset.mode===mode;
+    t.classList.toggle('active',on); t.setAttribute('aria-selected',on?'true':'false');
+  });
+  reset(silent!==false);
+  if(!silent) say(mode==='countdown'?'切回倒计时喵，猫饭计时开始！':'切到正计时喵，本喵帮你数着～');
+  saveStore();
+}
+document.querySelectorAll('.mode-tab').forEach(function(t){
+  t.addEventListener('click',function(){ if(t.dataset.mode!==cfg.mode) setMode(t.dataset.mode,false); });
+});
+function applyTheme(){
+  document.body.dataset.theme=cfg.theme;
+  var meta=document.querySelector('meta[name="theme-color"]');
+  if(meta) meta.content = cfg.theme==='dark' ? '#202a2a' : '#f6f3ee';
+}
+$('btn-theme').addEventListener('click',function(){
+  cfg.theme=cfg.theme==='dark'?'light':'dark'; applyTheme(); saveStore(); clickSound();
+  toast(cfg.theme==='dark'?'夜巡模式喵':'白天模式喵');
+});
+btnMain.addEventListener('click',toggleMain);
+$('btn-reset').addEventListener('click',function(){ reset(false); clickSound(); });
+$('btn-plus').addEventListener('click',addMinute);
+$('clear-close').addEventListener('click',function(){ $('clear-mask').hidden=true; });
+$('clear-mask').addEventListener('click',function(e){ if(e.target===this) this.hidden=true; });
+$('clear-again').addEventListener('click',function(){ $('clear-mask').hidden=true; reset(true); start(); });
+document.addEventListener('keydown',function(e){
+  var tag=(e.target.tagName||'').toLowerCase();
+  if(tag==='input'||tag==='textarea'||tag==='select'||tag==='button') return;
+  if(e.code==='Space'){ e.preventDefault(); toggleMain(); }
+  else if(e.key==='r'||e.key==='R'){ reset(false); }
+  else if(e.key==='1'){ if(cfg.mode!=='countdown') setMode('countdown',false); }
+  else if(e.key==='2'){ if(cfg.mode!=='stopwatch') setMode('stopwatch',false); }
+  else if(e.key==='m'||e.key==='M'){
+    cfg.muted=!cfg.muted; $('sw-sound').checked=!cfg.muted; saveStore();
+    toast(cfg.muted?'静音喵':'铃声回来了喵');
+  }
+  else if(e.key==='Escape'){ $('clear-mask').hidden=true; closeDrawer(); }
+});
+
+/* ============================================================
+   8. Live2D 呆猫：可配置路径 + 双 SDK + 失败降级
+   ============================================================ */
+function loadScript(src,key,onLoad,onErr){
+  if (window[key]) { onLoad(); return; }
+  var old=document.querySelector('script[data-lib="'+key+'"]');
+  if (old){
+    old.addEventListener('load',onLoad,{once:true});
+    old.addEventListener('error',function(){
+      if(old.parentNode) old.parentNode.removeChild(old); onErr();
+    },{once:true});
+    return;
+  }
+  var el=document.createElement('script');
+  el.src=src; el.dataset.lib=key; el.async=true;
+  el.onload=onLoad;
+  // 失败时移除节点，否则备用源会被这个已失败的 script 挡住
+  el.onerror=function(){ if(el.parentNode) el.parentNode.removeChild(el); onErr(); };
+  document.head.appendChild(el);
+}
+function cleanupStage(){
+  ['#oml2d-stage','#live2d-widget','#oml2d-tips'].forEach(function(sel){
+    var el=document.querySelector(sel); if(el && el.parentNode) el.parentNode.removeChild(el);
+  });
+  window.__cat=null; live2dReady=false;
+}
+function showPlaceholder(show,note){
+  placeholder.classList.toggle('hidden',!show);
+  if(note) monNote.textContent=note;
+}
+// 把库创建的舞台搬进右侧卡片，改由卡片定位，不再浮在页面左下角
+function dockStage(){
+  var host=$('cat-stage'); if(!host) return false;
+  var ok=false;
+  ['#oml2d-stage','#live2d-widget'].forEach(function(sel){
+    var el=document.querySelector(sel);
+    if(!el) return;
+    if(el.parentNode!==host) host.appendChild(el);
+    el.classList.add('docked'); ok=true;
+  });
+  return ok;
+}
+/* 模型诊断：把「为什么加载不出来」拆成可逐条核对的结论 */
+function renderProbe(lines){
+  var out=$('diag-out');
+  if(out){ out.hidden=false; out.textContent=lines.join('\n'); }
+}
+function showProbeFailure(){
+  if(!probeFatal) return;
+  live2dReady=false;
+  showPlaceholder(true,probeFatal.title+'，已启用替身喵');
+  modelStatus.innerHTML='<b>'+escapeHtml(probeFatal.title)+'</b><br />'+escapeHtml(probeFatal.detail)+
+    '<br />点 ⚙ →「诊断模型」看逐项结果喵。';
+}
+function probeModel(url,manual){
+  var lines=[
+    '[诊断] 页面协议  '+location.protocol,
+    '[诊断] 模型地址  '+url,
+    '[诊断] 渲染库    '+(cfg.sdk==='widget'?'live2d-widget (Cubism 2)':'oh-my-live2d (Cubism 4)')
+  ];
+  if(lastLibError) lines.push('[诊断] 库内部报错  '+lastLibError);
+  // file:// 下 fetch 本地 json 会被浏览器直接拒绝，不必再试
+  if(location.protocol==='file:' && !/^https?:/i.test(url)){
+    lines.push('[×] file:// 协议禁止读取本地 json');
+    probeFatal={title:'本地模型在 file:// 下读不到',
+      detail:'请在本目录运行 python -m http.server 8080，再访问 http://localhost:8080。'};
+    renderProbe(lines); return Promise.resolve(lines);
+  }
+  return fetch(url,{cache:'no-store'}).then(function(res){
+    lines.push('[诊断] HTTP 状态  '+res.status);
+    if(!res.ok){
+      lines.push('[×] 模型配置取不到：路径不对，或预览服务未放行该文件');
+      probeFatal={title:'模型文件 HTTP '+res.status,
+        detail:'检查文件名与相对路径；若用内置预览面板打开，工作区里的 models/ 目录不会被放行，请改用本地 http 服务。'};
+      return lines;
+    }
+    return res.text().then(function(txt){
+      var j;
+      try{ j=JSON.parse(txt); }catch(e){
+        lines.push('[×] 返回内容不是合法 JSON');
+        probeFatal={title:'模型配置不是合法 JSON',
+          detail:'请确认填的是 *.model3.json 或 model.json 本身，而不是文件夹或 .moc3。'};
+        return lines;
+      }
+      var v=j.Version, refs=j.FileReferences||j;
+      var moc=refs.Moc||refs.moc||j.model||'';
+      var tex=(refs.Textures||refs.textures||j.textures||[])[0]||'';
+      lines.push('[诊断] Cubism Version  '+(v===undefined?'无（Cubism 2 风格）':v));
+      lines.push('[诊断] Moc  '+(moc||'未声明')+'    Texture0  '+(tex||'未声明'));
+      var isV4=(v===3)||/\.moc3/i.test(String(moc));
+      if(cfg.sdk==='widget' && isV4){
+        lines.push('[×] Cubism 4 模型配了只支持 Cubism 2 的 live2d-widget');
+        probeFatal={title:'模型与 SDK 版本不匹配',
+          detail:'*.model3.json / *.moc3 属于 Cubism 4，请把 SDK 切回 oh-my-live2d。'};
+      } else if(!moc && !tex){
+        lines.push('[×] 配置里没有 Moc / Textures 字段');
+        probeFatal={title:'模型配置结构损坏',
+          detail:'json 里缺少模型与贴图声明，或填错了文件。'};
+      } else {
+        lines.push('[√] 配置可读；.moc3、贴图、motions/ 需与 json 保持原有相对目录');
+      }
+      return lines;
+    });
+  }).catch(function(e){
+    lines.push('[×] fetch 失败：'+((e&&e.message)?e.message:e));
+    lines.push('[提示] 常见于网络不通、跨域未开 CORS，或内置预览面板的 CSP connect-src 拦截外部请求');
+    probeFatal={title:'取不到模型配置',
+      detail:'网络 / CORS / CSP 拦截。内置预览面板会拦外部 fetch，请用本地 http 服务或双击 file:// 打开页面。'};
+    return lines;
+  }).then(function(result){
+    renderProbe(result);
+    if(!manual && probeFatal) showProbeFailure();
+    return result;
+  });
+}
+function watchModel(){
+  var tries=0;
+  var timer=setInterval(function(){
+    tries++;
+    var ok=document.querySelector('#oml2d-stage canvas, #live2d-widget canvas');
+    if(ok){
+      clearInterval(timer);
+      var docked=dockStage();
+      if(!docked){ showPlaceholder(true,'舞台定位失败，已启用替身喵'); return; }
+      // 只看到 canvas 不等于模型加载成功（404 时库仍会建一个空舞台）
+      if(probeFatal){ showProbeFailure(); return; }
+      live2dReady=true;
+      showPlaceholder(false,'ฅ 呆猫已就位 · 点一下戳戳它');
+      say('本喵来啦喵～老大今天也要专注哦！');
+    } else if(tries>24){
+      clearInterval(timer);
+      if(probeFatal) showProbeFailure();
+      else showPlaceholder(true,'模型未加载，已启用替身喵（点 ⚙ → 诊断模型 查原因）');
+    }
+  },400);
+}
+function mountModel(){
+  cleanupStage();
+  showPlaceholder(true,'正在呼唤呆猫…');
+  document.body.dataset.live2d = cfg.showCat ? 'shown' : 'hidden';
+  if(!cfg.showCat){ showPlaceholder(false,'呆猫休息中'); return; }
+
+  var url=(cfg.modelUrl||DEMO_MODEL).trim();
+  var isDemo=url.indexOf('lychee199star.github.io')>=0;
+  modelStatus.innerHTML = '当前模型：'+(isDemo?'<b>演示呆猫</b>（来自参考站，可替换）':'<b>自定义模型</b>')+
+    '<br /><span class="mono" style="font-size:10px">'+escapeHtml(url)+'</span>';
+  // 异步预检：失败时把具体原因写到舞台与诊断面板，不阻塞库的正常加载
+  probeFatal=null; lastLibError='';
+  probeModel(url,false);
+
+  if(cfg.sdk==='widget'){
+    loadScript(LIB_WIDGET,'L2Dwidget',function(){
+      try{
+        window.L2Dwidget.init({
+          model:{jsonPath:url,scale:1},
+          display:{position:'right',width:260,height:380,hOffset:0,vOffset:0},
+          mobile:{show:false},
+          name:{canvas:'live2d-widget'},
+          react:{opacityDefault:.9}
+        });
+        watchModel();
+      }catch(e){ fallback('Cubism 2 初始化失败', errText(e)); }
+    },function(){ fallback('渲染库加载失败', 'live2d-widget CDN 取不到：'+LIB_WIDGET); });
+  } else {
+    // 主源 unpkg，失败自动切参考站本地化副本
+    loadScript(LIB_OML2D,'OML2D',function(){ initOml2d(url); },function(){
+      loadScript(LIB_OML2D_FALLBACK,'OML2D',function(){ initOml2d(url); },function(){
+        fallback('渲染库加载失败','两个 CDN 都没取到：'+LIB_OML2D+' / '+LIB_OML2D_FALLBACK);
+      });
+    });
+  }
+}
+function errText(e){ return (e&&e.message)?String(e.message):'loadOml2d 抛出异常（无更多信息）'; }
+function initOml2d(url){
+  try{
+    window.__cat=window.OML2D.loadOml2d({
+      // models[].scale / position 是 0.19.3 的官方参数：默认 scale≈0.1，position=[0,0]
+      models:[{
+        path:url,
+        scale:clamp(parseFloat(cfg.modelScale),0.02,0.8),
+        position:[0, clamp(parseInt(cfg.modelY,10),-300,300)]
+      }],
+      mobileDisplay:false,
+      transitionTime:1000,
+      statusBar:{restMessage:'看板猫休息中'},
+      menus:{items:[
+        {id:'Rest',icon:'icon-rest',title:'休息',onClick:function(i){
+          i.statusBarOpen('看板猫休息中'); i.clearTips();
+          i.setStatusBarClickEvent(function(){ i.statusBarClose(); i.stageSlideIn(); i.statusBarClearEvents(); });
+          i.stageSlideOut();
+        }},
+        {id:'SwitchModel',icon:'icon-switch',title:'切换模型',onClick:function(i){ i.loadNextModel(); }}
+      ]},
+      tips:{
+        idleTips:{
+          message:['老大，专注一会儿喵！','别戳了喵，再戳就收费了喵！','猫饭快好了喵，再等一下下！','本喵在呢，找本喵干嘛喵？'],
+          duration:4000,interval:18000
+        },
+        welcomeTips:{
+          message:{daybreak:'早啊老大喵！',morning:'上午好喵，本喵刚巡逻完村子喵。',noon:'中午啦，记得吃饭喵！',
+            afternoon:'下午好喵，困了就摸摸本喵提神喵！',dusk:'天快黑了，今天也很努力喵！',
+            night:'老大来啦喵，本喵陪着你喵。',lateNight:'夜深了喵，早点睡喵……',weeHours:'还不睡喵？本喵陪你一起熬夜喵。'},
+          duration:6000
+        }
+      }
+    });
+    watchModel();
+  }catch(e){ fallback('模型初始化失败', errText(e)); }
+}
+function fallback(reason,detail){
+  cleanupStage();
+  showPlaceholder(true,reason+'，已启用替身喵（计时照常用）');
+  modelStatus.innerHTML='<b>'+escapeHtml(reason)+'</b>'+
+    (detail?'<br />详情：<span class="mono">'+escapeHtml(detail)+'</span>':'')+
+    (lastLibError?'<br />库内部：<span class="mono">'+escapeHtml(lastLibError)+'</span>':'')+
+    '<br />点 ⚙ →「诊断模型」逐项排查，或用 <code>python -m http.server 8080</code> 起本地服务喵。';
+}
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+// 点击呆猫说台词（参考站的命中判断思路）
+document.addEventListener('click',function(e){
+  if(!window.__cat) return;
+  var stage=document.querySelector('#oml2d-stage'); if(!stage) return;
+  var r=stage.getBoundingClientRect();
+  if(e.clientX>=r.left && e.clientX<=r.right && e.clientY>=r.top-40 && e.clientY<=r.bottom){
+    say(LINES.tap[Math.floor(Math.random()*LINES.tap.length)]);
+  }
+});
+
+/* ============================================================
+   9. 设置抽屉
+   ============================================================ */
+function openDrawer(){ $('drawer').classList.add('open'); $('drawer-mask').classList.add('open'); }
+function closeDrawer(){ $('drawer').classList.remove('open'); $('drawer-mask').classList.remove('open'); }
+$('btn-settings').addEventListener('click',openDrawer);
+$('btn-drawer-close').addEventListener('click',closeDrawer);
+$('drawer-mask').addEventListener('click',closeDrawer);
+$('btn-load').addEventListener('click',function(){
+  cfg.modelUrl=$('in-model').value.trim()||LOCAL_MODEL;
+  cfg.sdk=$('in-sdk').value;
+  cfg.modelScale=clamp(parseFloat($('in-scale').value),0.02,0.8)||0.18;
+  cfg.modelY=clamp(parseInt($('in-y').value,10),-300,300)||0;
+  saveStore(); mountModel(); toast('正在重新召唤呆猫喵…');
+});
+$('btn-demo').addEventListener('click',function(){
+  cfg.modelUrl=DEMO_MODEL; cfg.sdk='oml2d'; cfg.modelScale=0.18; cfg.modelY=60;
+  $('in-model').value=DEMO_MODEL; $('in-sdk').value='oml2d';
+  $('in-scale').value=cfg.modelScale; $('in-y').value=cfg.modelY;
+  saveStore(); mountModel(); toast('切回演示呆猫喵');
+});
+$('btn-diag').addEventListener('click',function(){
+  var out=$('diag-out'); out.hidden=false; out.textContent='诊断中…';
+  var savedFatal=probeFatal, savedSdk=cfg.sdk;
+  probeFatal=null; cfg.sdk=$('in-sdk').value;
+  probeModel($('in-model').value.trim()||cfg.modelUrl,true).then(function(lines){
+    out.textContent=lines.join('\n');
+  }).catch(function(e){
+    out.textContent='诊断出错：'+errText(e);
+  }).then(function(){
+    probeFatal=savedFatal; cfg.sdk=savedSdk;
+  });
+});
+$('sw-cat').addEventListener('change',function(){
+  cfg.showCat=this.checked; saveStore(); mountModel();
+});
+$('sw-sound').addEventListener('change',function(){
+  cfg.muted=!this.checked; saveStore(); if(!cfg.muted) clickSound();
+});
+
+/* ============================================================
+   10. 启动
+   ============================================================ */
+(function init(){
+  // 樱花
+  var box=$('petals');
+  for(var i=0;i<11;i++){
+    var p=document.createElement('i'); p.className='petal';
+    p.style.left=(4+i*8.6+Math.random()*5)+'%';
+    p.style.animationDuration=(9+Math.random()*7)+'s';
+    p.style.animationDelay=(-Math.random()*14)+'s';
+    p.style.transform='scale('+(.6+Math.random()*.8)+')';
+    box.appendChild(p);
+  }
+  // 恢复设置
+  applyTheme(); cfgToInputs();
+  document.querySelectorAll('.mode-tab').forEach(function(t){
+    var on=t.dataset.mode===cfg.mode;
+    t.classList.toggle('active',on); t.setAttribute('aria-selected',on?'true':'false');
+  });
+  $('in-model').value=cfg.modelUrl; $('in-sdk').value=cfg.sdk;
+  $('in-scale').value=cfg.modelScale; $('in-y').value=cfg.modelY;
+  $('sw-cat').checked=cfg.showCat; $('sw-sound').checked=!cfg.muted;
+  syncPresets();
+  st.target=targetMs(); st.remaining=st.target;
+  say(LINES.idle,true);
+  render();
+  mountModel();
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>

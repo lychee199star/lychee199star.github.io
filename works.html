@@ -46,6 +46,18 @@
         <h2>作品陈列室（空）</h2>
         <p>想不到吧老大，这个页面现在还是空空的喵！本喵也想给老大端上几个像样的作品，可村长大人还在上学，作品还没攒出来喵……不过老大放心，本喵已经在加紧学习技术了喵，前端、画画、各种瞎折腾一样都不会落下！等学成归来，这里一定摆满作品，老大记得常回来验收喵！</p>
       </section>
+
+      <section class="works-item" aria-label="呆猫计时器">
+        <a class="works-item__card" id="work-daimao-timer" href="assets/daimao-timer/index.html" target="_blank" rel="noopener noreferrer">
+          <img class="works-item__cover" src="assets/works-timer-preview.jpg" alt="呆猫计时器预览" loading="lazy" decoding="async" />
+          <div class="works-item__body">
+            <span class="works-item__tag">作品 01 · PALICO TIMER</span>
+            <h2>呆猫计时器</h2>
+            <p class="works-item__note">备注：老大其实我还是有点用的喵</p>
+            <span class="works-item__open">点开看看 ↗</span>
+          </div>
+        </a>
+      </section>
     </main>
     <footer class="friends-footer"><span>© 2026 lychee · 作品陈列室</span><a href="index.html">回村首页 ↑</a></footer>
 
@@ -149,11 +161,19 @@
               '本喵在呢，找本喵干嘛喵？',
               '鼠标别晃啦，本喵眼都要转花了喵！',
               '听歌吗？这里放的音乐还不错的喵。',
-              '老大，今天也要加油喵！'
+              '老大，今天也要加油喵！',
+              '哎，怎么还有一只艾露猫喵'
             ];
             instance.tipsMessage(lines[Math.floor(Math.random() * lines.length)], 3500, 3);
           }
         });
+        // 点开"呆猫计时器"作品时，桌宠会吐槽一句
+        const timerCard = document.getElementById('work-daimao-timer');
+        if (timerCard) {
+          timerCard.addEventListener('click', function () {
+            if (window.__daimeow) window.__daimeow.tipsMessage('哎，怎么还有一只艾露猫喵', 4000, 3);
+          });
+        }
       }
     </script>
   </body>
