@@ -558,8 +558,8 @@ if (lowerSection) {
     'assets/lower-bg-2.jpg',
     'assets/lower-bg-4.jpg',
     'assets/lower-bg-6.jpg',
-    'assets/lower-bg-rise-palico-1.png',
-    'assets/lower-bg-rise-palico-2.png'
+    'assets/lower-bg-rise-palico-1.webp',
+    'assets/lower-bg-rise-palico-2.webp'
   ];
   const secretBackground = 'assets/lower-bg-secret.jpg';
   let lowerBackgroundIndex = 0;
@@ -567,14 +567,33 @@ if (lowerSection) {
   lowerSection.style.setProperty('--lower-bg-current', `url('${lowerBackgrounds[0]}')`);
   lowerSection.style.setProperty('--lower-bg-next', `url('${lowerBackgrounds[1]}')`);
 
+  // 预加载缓存：图片没下载完之前不切换，避免出现空白背景。
+  const lowerBgCache = new Map();
+  const preloadLowerBackground = (background) => {
+    if (lowerBgCache.has(background)) return lowerBgCache.get(background);
+    const image = new Image();
+    const promise = new Promise((resolve) => {
+      image.onload = () => resolve(true);
+      image.onerror = () => resolve(false);
+      window.setTimeout(() => resolve(false), 8000);
+    });
+    image.src = background;
+    lowerBgCache.set(background, promise);
+    return promise;
+  };
+
   const fadeToBackground = (background, done) => {
-    lowerSection.style.setProperty('--lower-bg-next', `url('${background}')`);
-    lowerSection.classList.add('bg-changing');
-    window.setTimeout(() => {
-      lowerSection.style.setProperty('--lower-bg-current', `url('${background}')`);
-      lowerSection.classList.remove('bg-changing');
-      if (done) done();
-    }, 1000);
+    void preloadLowerBackground(background).then((loaded) => {
+      if (loaded) {
+        lowerSection.style.setProperty('--lower-bg-next', `url('${background}')`);
+        lowerSection.classList.add('bg-changing');
+      }
+      window.setTimeout(() => {
+        lowerSection.style.setProperty('--lower-bg-current', `url('${background}')`);
+        lowerSection.classList.remove('bg-changing');
+        if (done) done();
+      }, loaded ? 1000 : 0);
+    });
   };
 
   const scheduleBackground = () => window.setTimeout(() => {
