@@ -158,7 +158,11 @@ button { border: 0; cursor: pointer; }
 .scroll-cue { display: inline-flex; align-items: center; gap: 12px; margin-top: 86px; color: rgba(255,255,255,.72); font: 11px 'DM Mono', monospace; letter-spacing: .12em; }.scroll-line { display: inline-block; width: 50px; height: 1px; background: rgba(255,255,255,.6); }
 
 .layout-section { position: relative; isolation: isolate; display: grid; grid-template-columns: minmax(0, 1fr) 310px; gap: 90px; width: 100%; max-width: none; margin: 0; padding: 120px max(32px, calc((100vw - 1160px) / 2)) 110px; background: var(--paper); overflow: hidden; }
-.layout-section::before, .layout-section::after { content: ''; position: absolute; inset: 0; z-index: -2; background-position: center; background-size: cover; background-repeat: no-repeat; transition: opacity 1s ease; pointer-events: none; }
+.layout-section::before, .layout-section::after { content: ''; position: absolute; inset: 0; z-index: -2; background-position: center; background-size: cover; background-repeat: no-repeat; background-attachment: fixed; transition: opacity 1s ease; pointer-events: none; }
+/* 真触屏设备不支持 fixed 附件（iOS Safari 渲染错乱），降级为普通滚动背景 */
+@media (hover: none) and (pointer: coarse) {
+  .layout-section::before, .layout-section::after { background-attachment: scroll; }
+}
 .layout-section::before { background-image: linear-gradient(rgba(246,243,238,.64), rgba(246,243,238,.72)), var(--lower-bg-current, url('assets/lower-bg-1.jpg')); opacity: 1; }
 .layout-section::after { z-index: -1; background-image: linear-gradient(rgba(246,243,238,.64), rgba(246,243,238,.72)), var(--lower-bg-next, url('assets/lower-bg-2.jpg')); opacity: 0; }
 .layout-section.bg-changing::before { opacity: 0; }.layout-section.bg-changing::after { opacity: 1; }
