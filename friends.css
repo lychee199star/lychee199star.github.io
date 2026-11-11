@@ -163,3 +163,16 @@ body.dark .friends-empty { color: #aab9c8; background: rgba(35, 56, 77, .8); bor
   .exchange-sign, .own-card { padding: 26px 20px; }
 }
 @media (prefers-reduced-motion: reduce) { .friend-card, .friend-fish { transition: none; } }
+
+
+/* 友链申请区块：和名片墙同一套玻璃卡 */
+.friends-apply { margin-top: 44px; padding: 30px 28px 28px; }
+.friends-apply h2 { margin: 0 0 12px; color: #285b91; font: 700 24px/1.5 'LXGW WenKai', 'KaiTi', serif; }
+.friends-apply-tips { margin: 0 0 20px; color: #5d7790; font-size: 13.5px; line-height: 1.95; }
+.exchange-hint { margin: 16px 0 0; color: #4d82bb; font-size: 13px; line-height: 1.9; }
+body.dark .friends-apply h2 { color: #b9d7f2; }
+body.dark .friends-apply-tips { color: #aab9c8; }
+body.dark .exchange-hint { color: #6fd6ff; }
+@media (max-width: 767px) {
+  .friends-apply { margin-top: 32px; padding: 24px 18px; }
+}

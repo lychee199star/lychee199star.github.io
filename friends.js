@@ -92,7 +92,48 @@ function renderFriendLinks(links) {
   document.querySelector('#friends-count').textContent = `${String(count).padStart(2, '0')} 位同行猎人`;
 }
 
-renderFriendLinks(friendLinks);
+// 从 Waline 拉取友链申请（path=/friend-apply），和手动维护的 friendLinks 合并展示。
+const FRIEND_APPLY_API = 'https://waline-blog-rouge.vercel.app/api/comment?path=/friend-apply&page=1&pageSize=100&sortBy=insertedAt_asc';
+
+function htmlToText(html) {
+  const box = document.createElement('div');
+  box.innerHTML = typeof html === 'string' ? html : '';
+  return (box.textContent || '').replace(/\s+/g, ' ').trim();
+}
+
+// 留言里贴的第一张图片当作头像。
+function pickAvatarFromComment(html) {
+  if (typeof html !== 'string') return null;
+  const match = html.match(/https?:\/\/[^\s"'<>]+\.(?:png|jpe?g|gif|webp|avif)(?:\?[^\s"'<>]*)?/i);
+  return match ? match[0] : null;
+}
+
+function loadFriendApplications() {
+  const manual = Array.isArray(friendLinks) ? friendLinks : [];
+  renderFriendLinks(manual);
+  fetch(FRIEND_APPLY_API, { headers: { Accept: 'application/json' } })
+    .then(response => (response.ok ? response.json() : Promise.reject(new Error('HTTP ' + response.status))))
+    .then(payload => {
+      const list = payload && payload.data && Array.isArray(payload.data.data) ? payload.data.data : [];
+      const applied = list
+        .filter(item => item && item.status === 'approved' && !item.rid)
+        .map(item => {
+          const text = htmlToText(item.comment);
+          return {
+            name: (item.nick || '').trim(),
+            url: item.link || '',
+            desc: text.length > 80 ? `${text.slice(0, 80)}…` : text,
+            avatar: pickAvatarFromComment(item.comment)
+          };
+        })
+        .filter(item => item.name && item.url);
+      // 手动维护的排在前面，申请来的按提交顺序跟在后面。
+      renderFriendLinks([...manual, ...applied]);
+    })
+    .catch(() => { /* 拉取失败时保留手动友链 */ });
+}
+
+loadFriendApplications();
 
 // 复制本喵名片；浏览器不允许写剪贴板时提供已选中的文字供手动复制。
 document.querySelector('#copy-own-card').addEventListener('click', async () => {

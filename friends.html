@@ -69,8 +69,7 @@
           </ul>
           <p>本喵审核通过后，就把你的名片钉上这面名录喵！</p>
           <p class="exchange-agreement">小约定：内容要健康、最好先在本喵这边留过爪印喵；<br />哪天巢穴塌了（站点挂了），本喵会把名片收进抽屉喵～</p>
-          <a class="exchange-button" href="index.html#cat-guestbook">去留言板留爪印 🐾</a>
-          <small class="exchange-local-note">目前留言板仅保存在留言者自己的浏览器中。站长暂时无法收到在线申请喵。</small>
+          <p class="exchange-hint">填完下面的表单，名片会自动钉到上面的墙上喵；站长看到后会来串门，不合规的会被摘掉喵。</p>
         </div>
         <aside class="own-card" aria-labelledby="own-card-title">
           <span class="paw-placeholder" aria-hidden="true"></span>
@@ -88,6 +87,18 @@
           <label class="sr-only" for="copy-card-fallback">名片文字，可选中后手动复制</label>
           <textarea id="copy-card-fallback" readonly hidden rows="5"></textarea>
         </aside>
+      </section>
+
+      <!-- 友链申请：Waline 评论，提交后自动渲染到上方名片墙 -->
+      <section class="friends-apply wood-panel" id="apply" aria-labelledby="apply-title">
+        <p class="friends-kicker">LEAVE YOUR PAW PRINT / 直接填写</p>
+        <h2 id="apply-title">在这里交换名片喵</h2>
+        <p class="friends-apply-tips">
+          昵称填猫咪名，网址填巢穴地址（你的博客），留言里写一句自我介绍——<br />
+          想带头像就在留言里贴一张图片链接，不贴的话本喵用猫爪代替喵。<br />
+          提交后名片会立刻钉到上面的墙上，站长会来串门验收喵！
+        </p>
+        <div id="friend-apply" class="waline-wrap"></div>
       </section>
     </main>
     <footer class="friends-footer"><span>© 2026 lychee · 猫村同行手册</span><a href="index.html">回村首页 ↑</a></footer>
@@ -140,7 +151,33 @@
     <script src="catcar-transition.js"></script>
     <script src="tilt.js"></script>
     <!-- 此页不加载首页 script.js，避免调用首页专属弹窗。 -->
-    <script src="friends.js"></script>
+    <!-- Waline 评论客户端（本地化）：友链申请直接存在数据库里 -->
+    <script src="assets/lib/waline/waline.umd.js"></script>
+    <script>
+      (function () {
+        if (!window.Waline || !document.querySelector('#friend-apply')) return;
+        window.Waline.init({
+          el: '#friend-apply',
+          serverURL: 'https://waline-blog-rouge.vercel.app',
+          path: '/friend-apply',
+          lang: 'zh-CN',
+          login: 'disable',
+          requiredMeta: ['nick'],
+          pageSize: 5,
+          reaction: false,
+          search: false,
+          dark: 'body.dark',
+          locale: {
+            placeholder: '写一句自我介绍喵（可以顺便贴头像图片链接）',
+            nick: '猫咪名',
+            mail: '邮箱（选填）',
+            link: '巢穴地址（你的博客）',
+            sofa: '还没有猎人交换名片喵，做第一个吧喵！'
+          }
+        });
+      })();
+    </script>
+    <script src="friends.js?v=20261032"></script>
     <!-- 固定 translate.js 3.18.66；defer 保证翻译引擎先于本站控制脚本执行。 -->
     <script id="translate-cdn" src="https://cdn.staticfile.net/translate.js/3.18.66/translate.js" defer onerror="this.dataset.failed='true'"></script>
     <script src="translation.js" defer></script>
