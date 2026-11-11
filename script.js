@@ -66,8 +66,6 @@ const searchOverlay = document.querySelector('#search-overlay');
 const searchClose = document.querySelector('#search-close');
 const searchInput = document.querySelector('#search-input');
 const searchResults = document.querySelector('#search-results');
-const newsletterForm = document.querySelector('#newsletter-form');
-const formNote = document.querySelector('#form-note');
 const catFace = document.querySelector('#cat-face');
 const catStatusText = document.querySelector('#cat-status-text');
 const catStatusDate = document.querySelector('#cat-status-date');
@@ -501,11 +499,7 @@ searchInput.addEventListener('input', () => {
     : (query ? '<p>没有找到匹配的文章，换个关键词试试。</p>' : '<p>输入关键词开始搜索。</p>');
 });
 
-newsletterForm.addEventListener('submit', event => {
-  event.preventDefault();
-  formNote.textContent = '已收到，下一封信见。';
-  newsletterForm.querySelector('input').value = '';
-});
+// 订阅表单已移除（静态站无法真正发送邮件），联系方式改为邮箱与留言板。
 
 document.querySelector('#load-more').addEventListener('click', event => {
   event.currentTarget.innerHTML = '已经到底啦 <span>✦</span>';

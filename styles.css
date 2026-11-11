@@ -871,3 +871,14 @@ body.dark { --paper: #1d2221; --paper-deep: #2c3431; --ink: #f2eee8; --muted: #a
 }
 @media (max-width: 680px) { .nav-underline { display: none; } }
 @media (prefers-reduced-motion: reduce) { .nav-underline { transition: none; } }
+
+
+/* =========================================================================
+   订阅区块改为纯联系方式（已移除假订阅表单）+ 页脚访问统计
+   ========================================================================= */
+.newsletter-section { justify-content: center; text-align: center; }
+.newsletter-section > div { max-width: 640px; }
+.contact-emails { justify-content: center; }
+.site-visits { color: var(--muted); font: 10px 'DM Mono', monospace; }
+.site-visits b { color: var(--accent-deep); font-weight: 700; }
+.dark .site-visits b { color: #b9d7f2; }
