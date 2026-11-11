@@ -259,6 +259,20 @@ window.addEventListener('scroll', () => {
   progress.style.width = `${scrollable ? (window.scrollY / scrollable) * 100 : 0}%`;
 }, { passive: true });
 
+// 页脚统计：从 Waline 取本站真实留言总数（不蒜子对 github.io 是共享计数，已弃用）。
+(function initCommentCounter() {
+  const el = document.querySelector('#site-comment-count');
+  if (!el) return;
+  fetch('https://waline-blog-rouge.vercel.app/api/comment?type=count')
+    .then(response => (response.ok ? response.json() : Promise.reject(new Error('HTTP ' + response.status))))
+    .then(data => {
+      if (data && data.errno === 0 && typeof data.data === 'number') {
+        el.textContent = String(data.data);
+      }
+    })
+    .catch(() => { el.textContent = '0'; });
+})();
+
 // 首屏滚动转换：把滚动进度写入 --hero-scroll（0~1），CSS 负责全部变换。
 const heroSection = document.querySelector('.site-header');
 if (heroSection && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {

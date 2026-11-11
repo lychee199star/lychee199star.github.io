@@ -944,3 +944,71 @@ body.dark .waline-wrap {
 #cat-guestbook .waline-wrap { font-size: 12.5px; }
 #cat-guestbook .waline-wrap .wl-panel { margin: .5em 0; }
 #cat-guestbook .waline-wrap .wl-editor { width: calc(100% - 1em); min-height: 6.5em; }
+
+
+/* =========================================================================
+   留言板透明化：去掉木牌材质（木纹/麻绳/铆钉），改成浅蓝玻璃卡
+   ========================================================================= */
+.cat-guestbook {
+  color: #24476b;
+  background: rgba(255, 255, 255, .62);
+  background-image: none;
+  border: 1px solid rgba(77, 130, 187, .22);
+  border-radius: 20px;
+  box-shadow: 0 16px 40px rgba(36, 71, 107, .10);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.cat-guestbook::before,
+.cat-guestbook::after { display: none; }
+.guestbook-rivets { display: none; }
+.guestbook-welcome { font-family: 'LXGW WenKai', 'KaiTi', 'STKaiti', 'Microsoft YaHei', sans-serif; text-shadow: none; }
+.guestbook-welcome h2 { color: #285b91; font: 700 17px/1.7 'LXGW WenKai', 'KaiTi', sans-serif; }
+.guestbook-welcome p { color: #5d7790; }
+.guestbook-cat { border-color: #fff; border-width: 3px; box-shadow: 0 6px 16px rgba(36, 71, 107, .16); }
+.guestbook-local-note { color: #6d8eab; }
+
+/* Waline 改为透明浅色系，和玻璃卡一致 */
+.waline-wrap {
+  --waline-theme-color: #3e8ef7;
+  --waline-active-color: #285b91;
+  --waline-color: #3d4a5c;
+  --waline-bg-color: rgba(255, 255, 255, .92);
+  --waline-bg-color-light: rgba(240, 246, 252, .92);
+  --waline-bg-color-hover: rgba(226, 238, 250, .92);
+  --waline-border-color: rgba(77, 130, 187, .28);
+  --waline-info-color: #7a90a8;
+  --waline-info-bg-color: rgba(240, 246, 252, .92);
+  --waline-disable-bg-color: rgba(240, 244, 248, .92);
+  --waline-disable-color: #9aa8b8;
+  --waline-light-grey: #94a3b5;
+  --waline-dark-grey: #5d7790;
+  --waline-white: #fff;
+  --waline-bq-color: #dbe7f3;
+  --waline-avatar-radius: 10px;
+  --waline-font-size: 13px;
+}
+body.dark .cat-guestbook {
+  color: #dbeaf7;
+  background: rgba(35, 56, 77, .55);
+  border-color: rgba(185, 215, 242, .22);
+}
+body.dark .guestbook-welcome h2 { color: #b9d7f2; }
+body.dark .guestbook-welcome p { color: #aab9c8; }
+body.dark .guestbook-local-note { color: #8ea8c2; }
+body.dark .waline-wrap {
+  --waline-theme-color: #6fd6ff;
+  --waline-active-color: #bff0ff;
+  --waline-color: #dce8f4;
+  --waline-bg-color: rgba(30, 48, 66, .92);
+  --waline-bg-color-light: rgba(40, 60, 80, .92);
+  --waline-bg-color-hover: rgba(50, 72, 94, .92);
+  --waline-border-color: rgba(185, 215, 242, .28);
+  --waline-info-color: #9fb6cc;
+  --waline-info-bg-color: rgba(40, 60, 80, .92);
+  --waline-disabled-bg-color: rgba(38, 56, 74, .92);
+  --waline-light-grey: #8fa6bd;
+  --waline-dark-grey: #b6c9dc;
+  --waline-white: #1e3042;
+  --waline-bq-color: rgba(60, 84, 108, .9);
+}
