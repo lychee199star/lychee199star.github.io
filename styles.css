@@ -882,3 +882,65 @@ body.dark { --paper: #1d2221; --paper-deep: #2c3431; --ink: #f2eee8; --muted: #a
 .site-visits { color: var(--muted); font: 10px 'DM Mono', monospace; }
 .site-visits b { color: var(--accent-deep); font-weight: 700; }
 .dark .site-visits b { color: #b9d7f2; }
+
+
+/* =========================================================================
+   Waline 评论：覆盖成和告示板一致的米黄木牌风
+   ========================================================================= */
+.waline-wrap {
+  --waline-theme-color: #6b4522;
+  --waline-active-color: #8b5e34;
+  --waline-color: #3d3026;
+  --waline-bg-color: #fff8e6;
+  --waline-bg-color-light: #f9efd8;
+  --waline-bg-color-hover: #f0e2c6;
+  --waline-border-color: #c9a97a;
+  --waline-info-color: #826e55;
+  --waline-info-bg-color: #f2e4c0;
+  --waline-disable-bg-color: #efe6d2;
+  --waline-disable-color: #a99a80;
+  --waline-light-grey: #a08c6e;
+  --waline-dark-grey: #6b5a45;
+  --waline-white: #fffaf0;
+  --waline-bq-color: #e8d3ad;
+  --waline-avatar-radius: 8px;
+  --waline-font-size: 13px;
+  margin-top: 6px;
+  color: #3d3026;
+  font-family: 'LXGW WenKai', 'KaiTi', 'STKaiti', 'Microsoft YaHei', sans-serif;
+}
+.waline-wrap .wl-panel,
+.waline-wrap .wl-editor,
+.waline-wrap .wl-btn {
+  font-family: inherit;
+}
+.waline-wrap .wl-header input,
+.waline-wrap .wl-editor { color: #3d3026; }
+.waline-wrap .wl-empty,
+.waline-wrap .wl-power { color: #826e55; }
+.waline-wrap .wl-power a { color: #6b4522; }
+/* 暗色模式跟随站点 */
+body.dark .waline-wrap {
+  --waline-theme-color: #e0c48a;
+  --waline-active-color: #f2e4c0;
+  --waline-color: #e7dcc6;
+  --waline-bg-color: #35281c;
+  --waline-bg-color-light: #3f3023;
+  --waline-bg-color-hover: #4a382a;
+  --waline-border-color: #6b533a;
+  --waline-info-color: #bba98a;
+  --waline-info-bg-color: #43342a;
+  --waline-disable-bg-color: #3a2e23;
+  --waline-disable-color: #8d7d66;
+  --waline-light-grey: #9c8b73;
+  --waline-dark-grey: #c2b39a;
+  --waline-white: #fff8e6;
+  --waline-bq-color: #4a382a;
+}
+/* 隐藏评论卡上的 UA / IP 归属地标签，木牌上更干净 */
+#cat-guestbook .waline-wrap .wl-meta { display: none; }
+
+/* 侧栏较窄：收紧 Waline 内边距，避免输入框被挤 */
+#cat-guestbook .waline-wrap { font-size: 12.5px; }
+#cat-guestbook .waline-wrap .wl-panel { margin: .5em 0; }
+#cat-guestbook .waline-wrap .wl-editor { width: calc(100% - 1em); min-height: 6.5em; }

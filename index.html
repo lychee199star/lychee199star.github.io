@@ -10,7 +10,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@callmebill/lxgw-wenkai-web@latest/style.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox@3.3.1/dist/css/glightbox.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-calendar@latest/dist/github-calendar-responsive.css" />
-    <link rel="stylesheet" href="styles.css?v=20261028" />
+    <link rel="stylesheet" href="assets/lib/waline/waline.css" />
+    <link rel="stylesheet" href="styles.css?v=20261030" />
   </head>
   <body class="blog-page">
     <div class="catcar-transition" id="catcar-transition" aria-hidden="true">
@@ -477,17 +478,10 @@
               <img class="guestbook-cat" src="assets/guestbook-cat.jpg" alt="举起爪子说好耶的艾露猫" width="728" height="1080" loading="lazy" decoding="async" />
               <p>远道而来的猎人，辛苦了喵！<br />这里是猫村的村口告示牌，路过就留句话吧喵——<br />吐槽也好、点菜也好、寻猫启事也好，<br />本喵都会一条一条钉牢，拿去给村长过目喵！<br />留言不收银子，只收一颗想说话的心喵！</p>
             </header>
-            <p class="guestbook-local-note">留言保存在当前浏览器中，仅自己可见。</p>
-            <form class="guestbook-form" id="guestbook-form" novalidate>
-              <label for="guestbook-name">昵称（选填）</label>
-              <input id="guestbook-name" name="nickname" type="text" maxlength="30" placeholder="无名猎人" autocomplete="nickname" />
-              <label for="guestbook-message">留言内容（必填）</label>
-              <textarea id="guestbook-message" name="message" rows="4" required placeholder="猎人，今天有什么想说的喵？" aria-describedby="guestbook-count guestbook-status"></textarea>
-              <div class="guestbook-form-footer"><span id="guestbook-count">0 / 200 字</span><button type="submit" class="guestbook-submit">钉上木牌</button></div>
-              <p class="guestbook-status" id="guestbook-status" role="status" aria-live="polite" aria-atomic="true"></p>
-            </form>
-            <div class="guestbook-notes" id="guestbook-notes" role="list" aria-label="猎人留言"></div>
-            <p class="guestbook-empty" id="guestbook-empty">还没有猎人留言喵，来做第一个吧喵！</p>
+            <p class="guestbook-local-note">留言会真的钉在村口木牌上，所有猎人都能看见喵。</p>
+            <!-- Waline 评论：服务端 waline-blog-rouge.vercel.app，数据存在 Neon 数据库 -->
+            <div id="waline" class="waline-wrap" aria-label="猎人留言板"></div>
+            <noscript><p class="guestbook-empty">请启用 JavaScript 才能留言喵。</p></noscript>
           </section>
         </aside>
       </section>
@@ -573,7 +567,28 @@
     <script src="https://cdn.jsdelivr.net/npm/github-calendar@latest/dist/github-calendar.min.js"></script>
     <script src="script.js?v=20261025"></script>
     <script src="tilt.js"></script>
-    <script src="guestbook.js"></script>
+    <!-- Waline 评论客户端（本地化）；path 固定，保证所有页面共用同一串留言 -->
+    <script src="assets/lib/waline/waline.umd.js"></script>
+    <script>
+      (function () {
+        if (!window.Waline || !document.querySelector('#waline')) return;
+        window.Waline.init({
+          el: '#waline',
+          serverURL: 'https://waline-blog-rouge.vercel.app',
+          path: '/cat-guestbook',
+          lang: 'zh-CN',
+          login: 'disable',
+          requiredMeta: ['nick'],
+          pageSize: 10,
+          reaction: false,
+          search: false,
+          dark: 'body.dark',
+          locale: {
+            placeholder: '猎人，今天有什么想说的喵？（留下昵称就能钉上木牌）'
+          }
+        });
+      })();
+    </script>
     <!-- 固定 translate.js 3.18.66；defer 保证翻译引擎先于本站控制脚本执行。 -->
     <script id="translate-cdn" src="https://cdn.staticfile.net/translate.js/3.18.66/translate.js" defer onerror="this.dataset.failed='true'"></script>
     <script src="translation.js" defer></script>
